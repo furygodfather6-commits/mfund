@@ -159,19 +159,31 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-vasooli-app';
-        let firebaseConfig;
-        try { firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null; } 
-        catch (e) { console.error("Firebase config parsing error:", e); firebaseConfig = null; }
+        // ===================================================================================
+        // 1. ज़रूरी कदम: अपनी Firebase config को यहां पेस्ट करें
+        // Firebase Console से `firebaseConfig` ऑब्जेक्ट को कॉपी करके यहां पेस्ट करें।
+        // ===================================================================================
+  const firebaseConfig = {
+  apiKey: "AIzaSyAU4AYWKtXzALub9sBvbUJBF4Ic4HS3vho",
+  authDomain: "mfund-5dd9e.firebaseapp.com",
+  projectId: "mfund-5dd9e",
+  storageBucket: "mfund-5dd9e.firebasestorage.app",
+  messagingSenderId: "797973279095",
+  appId: "1:797973279095:web:c8855526aff6c300187172",
+  measurementId: "G-0R3JS015KK"
+};
 
-        if (!firebaseConfig) {
-            document.getElementById('app').innerHTML = `<div class="text-center text-red-500">Firebase configuration is missing or invalid.</div>`;
+        // ===================================================================================
+
+        if (!firebaseConfig || firebaseConfig.apiKey === "AIzaSy...YOUR_API_KEY") {
+            document.getElementById('app').innerHTML = `<div class="text-center p-8"><h2 class="text-2xl font-bold text-red-600">Firebase कॉन्फ़िगर नहीं है!</h2><p class="mt-4 text-slate-600">कृपया <code>vasooli_tracker.html</code> फ़ाइल को एडिट करें और अपनी Firebase प्रोजेक्ट की <code>firebaseConfig</code> डिटेल्स डालें।</p></div>`;
         } else {
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
             const auth = getAuth(app);
+            const appId = firebaseConfig.projectId; // We will use projectId for database path
             setLogLevel('error'); 
 
             // DOM Elements
@@ -374,7 +386,7 @@
 
                 if (memberName && currentUserId && !isNaN(monthlyAmount) && monthlyAmount >= 0) {
                     try {
-                        const collectionPath = `artifacts/${appId}/users/${currentUserId}/members`;
+                        const collectionPath = `artifacts/${appId}/public/chanda/${currentUserId}/members`;
                         await addDoc(collection(db, collectionPath), { 
                             name: memberName, 
                             monthlyAmount, 
@@ -403,7 +415,7 @@
                      const memberId = deleteButton.dataset.memberId;
                      const memberName = deleteButton.closest('tr').cells[0].textContent;
                      showConfirm("नाम हटाएं?", `क्या आप वाकई "${memberName}" का नाम हटाना चाहते हैं?`, async () => {
-                        try { await deleteDoc(doc(db, `artifacts/${appId}/users/${currentUserId}/members/${memberId}`)); } 
+                        try { await deleteDoc(doc(db, `artifacts/${appId}/public/chanda/${currentUserId}/members/${memberId}`)); } 
                         catch (error) { showAlert("नाम हटाने में त्रुटि हुई।", "त्रुटि"); }
                      });
                      return;
@@ -429,7 +441,7 @@
                     const saveChanges = async () => {
                         const newAmount = parseFloat(input.value);
                         if (!isNaN(newAmount) && newAmount >= 0) {
-                            const memberRef = doc(db, `artifacts/${appId}/users/${currentUserId}/members/${memberId}`);
+                            const memberRef = doc(db, `artifacts/${appId}/public/chanda/${currentUserId}/members/${memberId}`);
                             try {
                                 await updateDoc(memberRef, { monthlyAmount: newAmount });
                             } catch (error) {
@@ -458,7 +470,7 @@
                 const { member, monthKey } = activePaymentContext;
                 const paymentData = { date: paymentDateInput.value, amount: parseFloat(paymentAmountInput.value) };
                 if (paymentData.date && !isNaN(paymentData.amount) && paymentData.amount >= 0) {
-                    const memberRef = doc(db, `artifacts/${appId}/users/${currentUserId}/members/${member.id}`);
+                    const memberRef = doc(db, `artifacts/${appId}/public/chanda/${currentUserId}/members/${member.id}`);
                     try {
                         await updateDoc(memberRef, { [`payments.${monthKey}`]: paymentData });
                         hidePaymentModal();
@@ -471,7 +483,7 @@
             deletePaymentBtn.addEventListener('click', async () => {
                 if (!activePaymentContext || !currentUserId) return;
                 const { member, monthKey } = activePaymentContext;
-                const memberRef = doc(db, `artifacts/${appId}/users/${currentUserId}/members/${member.id}`);
+                const memberRef = doc(db, `artifacts/${appId}/public/chanda/${currentUserId}/members/${member.id}`);
                 try {
                      const updatedPayments = { ...member.payments };
                      delete updatedPayments[monthKey];
@@ -486,10 +498,13 @@
 
             async function main() {
                 try {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
-                    else await signInAnonymously(auth);
+                    await signInAnonymously(auth);
                     currentUserId = auth.currentUser.uid;
-                    const collectionPath = `artifacts/${appId}/users/${currentUserId}/members`;
+                    
+                    // IMPORTANT: The path is now public so anyone with the link can see the data
+                    // To make it private, change 'public/chanda' to 'users'
+                    const collectionPath = `artifacts/${appId}/public/chanda/${currentUserId}/members`;
+
                     onSnapshot(collection(db, collectionPath), (snapshot) => {
                         allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         revertEditingCell();
