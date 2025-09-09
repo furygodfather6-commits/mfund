@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मस्जिद चंदा रिकॉर्ड</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4; /* Green 50 */
+        }
+        .table-container {
+            flex-grow: 1;
+            overflow: auto;
+        }
+        /* Custom scrollbar */
+        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-container::-webkit-scrollbar-track { background: #dcfce7; } /* Green 100 */
+        .table-container::-webkit-scrollbar-thumb { background: #86efac; border-radius: 3px; } /* Green 300 */
+        .table-container::-webkit-scrollbar-thumb:hover { background: #4ade80; } /* Green 400 */
+        
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        tbody th {
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+        .loader {
+            border: 5px solid #e2e8f0; /* Slate 200 */
+            border-top: 5px solid #15803d; /* Green 700 */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .payment-cell {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            text-align: center;
+            font-weight: 600;
+            min-width: 90px;
+        }
+        .payment-cell.unpaid { background-color: #fee2e2; color: #dc2626; } /* Red */
+        .payment-cell.unpaid:hover { background-color: #fecaca; }
+        .payment-cell.partial { background-color: #fef9c3; color: #d97706; } /* Amber */
+        .payment-cell.partial:hover { background-color: #fef08a; }
+        .payment-cell.paid { background-color: #dcfce7; color: #16a34a; font-size: 1.125rem; line-height: 1.75rem; } /* Green */
+        .payment-cell.paid:hover { background-color: #bbf7d0; }
+
+        .payment-cell .tooltip {
+            visibility: hidden;
+            width: 170px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 6px 10px;
+            position: absolute;
+            z-index: 20;
+            bottom: 125%; 
+            left: 50%;
+            margin-left: -85px; 
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: pre-wrap;
+            font-size: 0.75rem;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .payment-cell:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div id="app" class="min-h-screen w-full p-4">
+        
+        <div class="bg-white border border-slate-200 rounded-xl shadow-lg p-4 w-full flex flex-col h-[calc(100vh-2rem)]">
+            
+            <!-- Single Line Header -->
+             <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 pb-3 border-b border-slate-200">
+                <div class="flex items-center gap-3">
+                    <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.773 2.022a.75.75 0 0 0-1.546 0l-1.02 4.082a.75.75 0 0 1-.726.543H5.409a.75.75 0 0 0-.528 1.284l3.233 3.28a.75.75 0 0 1-.277.99l-1.21 3.84a.75.75 0 0 0 .913 1.01l3.34-2.31a.75.75 0 0 1 .892 0l3.34 2.31a.75.75 0 0 0 .914-1.01l-1.21-3.84a.75.75 0 0 1-.278-.99l3.233-3.28a.75.75 0 0 0-.528-1.284h-4.072a.75.75 0 0 1-.727-.543L12.773 2.022ZM12 10.5a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V10.5ZM5.25 21a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Zm12 0a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Z" /></svg>
+                    <h2 class="text-xl font-bold text-green-800 shrink-0">मस्जिद चंदा रिकॉर्ड</h2>
+                </div>
+                
+                <!-- Summary Stats -->
+                <div id="summary-section" class="grid grid-cols-2 sm:grid-cols-3 xl:flex xl:items-center gap-x-4 gap-y-2">
+                     <div class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">चंदा देने वाले:</h3><p id="total-members-stat" class="text-base font-bold text-green-800">0</p></div>
+                     <div class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">कुल चंदा:</h3><p id="yearly-potential-stat" class="text-base font-bold text-green-800">₹0</p></div>
+                     <div class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">जमा:</h3><p id="yearly-collected-stat" class="text-base font-bold text-green-600">₹0</p></div>
+                     <div class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">बकाया:</h3><p id="yearly-pending-stat" class="text-base font-bold text-red-600">₹0</p></div>
+                     <div id="current-month-pending-card" class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">इस माह बकाया:</h3><p id="current-month-pending-stat" class="text-base font-bold text-amber-600">₹0</p></div>
+                </div>
+                
+                <!-- Controls -->
+                <div class="flex flex-col md:flex-row gap-2 shrink-0">
+                    <input type="text" id="search-bar" placeholder="खोजें..." class="border border-slate-300 rounded-md flex-grow p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400">
+                    <select id="year-selector" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition"></select>
+                    <form id="add-member-inline-form" class="flex-grow md:flex-grow-0 flex gap-2">
+                        <input type="text" id="new-member-name" placeholder="नया नाम..." class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full md:w-32" required>
+                        <input type="number" id="new-monthly-amount" placeholder="चंदा" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full md:w-20" required min="0">
+                        <input type="tel" id="new-member-phone" placeholder="फ़ोन" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full md:w-28">
+                        <button type="submit" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                            <span class="hidden sm:inline">जोड़ें</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="loader-container" class="flex justify-center items-center py-12 flex-grow"><div class="loader"></div></div>
+
+            <div id="table-section" class="hidden flex flex-col flex-grow pt-3">
+                <div class="table-container">
+                    <table class="min-w-full text-xs">
+                        <thead class="bg-green-50">
+                            <tr>
+                                <th class="text-left py-2 px-3 font-semibold text-green-800 sticky left-0 bg-green-50 w-[180px]">नाम</th>
+                                <th class="text-left py-2 px-3 font-semibold text-green-800 w-[120px]">फ़ोन नंबर</th>
+                                <th class="text-left py-2 px-3 font-semibold text-green-800 w-[100px]">मासिक चंदा</th>
+                                <script>
+                                    const months = ['जन', 'फ़र', 'मार्च', 'अप्रै', 'मई', 'जून', 'जुला', 'अग', 'सितं', 'अक्टू', 'नवं', 'दिसं'];
+                                    months.forEach(month => { document.write(`<th class="text-center py-2 px-2 font-semibold text-green-800 min-w-[70px]">${month}</th>`); });
+                                </script>
+                                <th class="text-left py-2 px-3 font-bold text-green-700 w-[100px]">कुल जमा</th>
+                                <th class="text-left py-2 px-3 font-bold text-red-700 w-[100px]">कुल बकाया</th>
+                                <th class="text-center py-2 px-2 font-semibold text-green-800">एक्शन</th>
+                            </tr>
+                        </thead>
+                        <tbody id="members-table-body" class="text-sm"></tbody>
+                    </table>
+                </div>
+                 <div id="no-members" class="text-center py-12 text-slate-500 hidden"><p class="text-lg font-semibold">कोई चंदा देने वाला नहीं मिला।</p><p class="text-sm">शुरू करने के लिए ऊपर दिए गए "जोड़ें" बटन का उपयोग करें।</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-xl shadow-lg p-5 w-full max-w-sm mx-auto text-center"><h3 id="modal-title" class="text-lg font-bold mb-3 text-slate-800"></h3><p id="modal-body" class="mb-5 text-sm text-slate-600"></p><div id="modal-actions" class="flex justify-center gap-3"></div></div></div>
+    <div id="payment-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-xl shadow-lg p-5 w-full max-w-md mx-auto"><h3 id="payment-modal-title" class="text-lg font-bold mb-5 text-slate-800 text-center"></h3><form id="payment-form"><div class="mb-3"><label for="payment-date" class="block text-xs font-medium text-slate-700 mb-1">भुगतान की तारीख</label><input type="date" id="payment-date" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required></div><div class="mb-5"><label for="payment-amount" class="block text-xs font-medium text-slate-700 mb-1">जमा राशि (₹)</label><input type="number" id="payment-amount" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required min="0"></div><div class="flex justify-between items-center gap-3"><button type="button" id="delete-payment-btn" class="text-sm bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700">रसीद हटाएं</button><div class="flex gap-3"><button type="button" id="cancel-payment-btn" class="text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300">रद्द करें</button><button type="submit" class="text-sm bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800">सेव करें</button></div></div></form></div></div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-vasooli-app';
+        let firebaseConfig;
+        try { firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null; } 
+        catch (e) { console.error("Firebase config parsing error:", e); firebaseConfig = null; }
+
+        if (!firebaseConfig) {
+            document.getElementById('app').innerHTML = `<div class="text-center text-red-500">Firebase configuration is missing or invalid.</div>`;
+        } else {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+            setLogLevel('error'); 
+
+            // DOM Elements
+            const addMemberInlineForm = document.getElementById('add-member-inline-form');
+            const membersTableBody = document.getElementById('members-table-body');
+            const searchBar = document.getElementById('search-bar');
+            const yearSelector = document.getElementById('year-selector');
+            const loader = document.getElementById('loader-container');
+            const tableSection = document.getElementById('table-section');
+            const noMembersMessage = document.getElementById('no-members');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalActions = document.getElementById('modal-actions');
+            const paymentModal = document.getElementById('payment-modal');
+            const paymentForm = document.getElementById('payment-form');
+            const paymentModalTitle = document.getElementById('payment-modal-title');
+            const paymentDateInput = document.getElementById('payment-date');
+            const paymentAmountInput = document.getElementById('payment-amount');
+            const deletePaymentBtn = document.getElementById('delete-payment-btn');
+            const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
+            const totalMembersStat = document.getElementById('total-members-stat');
+            const yearlyPotentialStat = document.getElementById('yearly-potential-stat');
+            const yearlyCollectedStat = document.getElementById('yearly-collected-stat');
+            const yearlyPendingStat = document.getElementById('yearly-pending-stat');
+            const currentMonthPendingCard = document.getElementById('current-month-pending-card');
+            const currentMonthPendingStat = document.getElementById('current-month-pending-stat');
+
+            let allMembers = [], currentUserId = null, activePaymentContext = null, currentlyEditingCell = null;
+
+            function showConfirm(title, message, onConfirm) {
+                modalTitle.textContent = title;
+                modalBody.innerHTML = message;
+                modalActions.innerHTML = ''; 
+                const confirmBtn = document.createElement('button');
+                confirmBtn.textContent = 'हाँ';
+                confirmBtn.className = 'text-sm bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700';
+                confirmBtn.onclick = () => { hideConfirm(); onConfirm(); };
+                const cancelBtn = document.createElement('button');
+                cancelBtn.textContent = 'नहीं';
+                cancelBtn.className = 'text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300';
+                cancelBtn.onclick = hideConfirm;
+                modalActions.append(confirmBtn, cancelBtn);
+                confirmationModal.classList.remove('hidden');
+                confirmationModal.classList.add('flex');
+            }
+            function hideConfirm() { confirmationModal.classList.add('hidden'); }
+            function showAlert(message, title = "सूचना") {
+                 modalTitle.textContent = title;
+                 modalBody.innerHTML = message;
+                 modalActions.innerHTML = '';
+                 const okBtn = document.createElement('button');
+                 okBtn.textContent = 'ठीक है';
+                 okBtn.className = 'text-sm bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800';
+                 okBtn.onclick = hideConfirm;
+                 modalActions.appendChild(okBtn);
+                 confirmationModal.classList.remove('hidden');
+                 confirmationModal.classList.add('flex');
+            }
+            
+            function showPaymentModal(member, monthKey) {
+                activePaymentContext = { member, monthKey };
+                const payment = member.payments?.[monthKey];
+                const monthName = new Date(monthKey + '-01T00:00:00').toLocaleString('hi-IN', { month: 'long' });
+                paymentModalTitle.textContent = `${member.name} - ${monthName} भुगतान`;
+                if (payment) {
+                    paymentDateInput.value = payment.date;
+                    paymentAmountInput.value = payment.amount;
+                    deletePaymentBtn.classList.remove('hidden');
+                } else {
+                    paymentDateInput.value = new Date().toISOString().split('T')[0];
+                    paymentAmountInput.value = member.monthlyAmount;
+                    deletePaymentBtn.classList.add('hidden');
+                }
+                paymentModal.classList.remove('hidden');
+                paymentModal.classList.add('flex');
+            }
+            function hidePaymentModal() {
+                paymentModal.classList.add('hidden');
+                activePaymentContext = null;
+                paymentForm.reset();
+            }
+            
+            function populateYears() {
+                const currentYear = new Date().getFullYear();
+                for (let year = 2050; year >= 2023; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    if (year === currentYear) option.selected = true;
+                    yearSelector.appendChild(option);
+                }
+            }
+            
+            function renderMembers() {
+                const searchTerm = searchBar.value.toLowerCase();
+                const selectedYear = parseInt(yearSelector.value, 10);
+                const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                const filteredMembers = allMembers.filter(member => member.name.toLowerCase().includes(searchTerm));
+
+                membersTableBody.innerHTML = ''; 
+                noMembersMessage.classList.toggle('hidden', allMembers.length > 0);
+                 if (filteredMembers.length === 0 && allMembers.length > 0) {
+                     noMembersMessage.classList.remove('hidden');
+                     noMembersMessage.querySelector('p').textContent = 'इस खोज से कोई नाम मेल नहीं खाता।';
+                 } else {
+                     noMembersMessage.querySelector('p').textContent = 'कोई चंदा देने वाला नहीं मिला।';
+                 }
+                
+                let yearlyCollected = 0, yearlyPotential = 0, currentMonthCollected = 0, currentMonthPotential = 0;
+                const systemCurrentYear = new Date().getFullYear();
+                const systemCurrentMonth = new Date().getMonth() + 1;
+                const isCurrentYearView = selectedYear === systemCurrentYear;
+
+                filteredMembers.sort((a, b) => a.name.localeCompare(b.name, 'hi'));
+
+                filteredMembers.forEach((member, index) => {
+                    const row = document.createElement('tr');
+                    const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50';
+                    row.className = rowBg;
+                    
+                    const monthlyAmount = member.monthlyAmount || 0;
+                    yearlyPotential += monthlyAmount * 12;
+
+                    if(isCurrentYearView) currentMonthPotential += monthlyAmount;
+
+                    let cells = `<th class="py-2 px-3 font-semibold text-slate-700 text-left sticky left-0 ${rowBg} w-[180px]">${member.name}</th>`;
+                    cells += `<td class="py-2 px-3 text-slate-600 w-[120px]">${member.phone || '-'}</td>`;
+                    cells += `<td class="editable-amount py-2 px-3 text-slate-600 font-semibold w-[100px] cursor-pointer hover:bg-green-100 transition" data-member-id="${member.id}" title="चंदा बदलने के लिए क्लिक करें">${formatter.format(monthlyAmount)}</td>`;
+                    
+                    let memberYearlyPaid = 0;
+
+                    for (let i = 0; i < 12; i++) {
+                        const monthIndex = i + 1;
+                        const monthKey = `${selectedYear}-${String(monthIndex).padStart(2, '0')}`;
+                        const payment = member.payments?.[monthKey];
+                        const paidAmount = payment ? parseFloat(payment.amount || 0) : 0;
+                        const pendingForMonth = monthlyAmount - paidAmount;
+                        
+                        if(payment) {
+                            yearlyCollected += paidAmount;
+                            memberYearlyPaid += paidAmount;
+                            if(isCurrentYearView && monthIndex === systemCurrentMonth) currentMonthCollected += paidAmount;
+                        }
+                        
+                        let cellClass = '', cellText = '', tooltipText = '';
+                        if (monthlyAmount <= 0) {
+                            cellClass = ''; cellText = '-'; tooltipText = 'कोई चंदा निर्धारित नहीं';
+                        } else if (pendingForMonth <= 0) {
+                            cellClass = 'paid'; cellText = '✔'; tooltipText = `जमा: ${formatter.format(paidAmount)}\nतारीख: ${payment.date}`;
+                        } else if (paidAmount > 0) {
+                            cellClass = 'partial'; cellText = `${formatter.format(pendingForMonth)}`; tooltipText = `जमा: ${formatter.format(paidAmount)}\nबकाया: ${formatter.format(pendingForMonth)}`;
+                        } else {
+                            cellClass = 'unpaid'; cellText = `${formatter.format(monthlyAmount)}`; tooltipText = 'भुगतान जोड़ें';
+                        }
+                        
+                        cells += `<td class="payment-cell py-2 px-2 ${cellClass}" data-member-id="${member.id}" data-month-key="${monthKey}">${cellText}<span class="tooltip">${tooltipText}</span></td>`;
+                    }
+                    
+                    const memberYearlyPotential = monthlyAmount * 12;
+                    const memberYearlyPending = memberYearlyPotential - memberYearlyPaid;
+                    
+                    cells += `<td class="py-2 px-3 font-bold text-green-600 w-[100px]">${formatter.format(memberYearlyPaid)}</td>`;
+                    cells += `<td class="py-2 px-3 font-bold text-red-600 w-[100px]">${formatter.format(memberYearlyPending)}</td>`;
+
+                    cells += `<td class="text-center py-2 px-2">
+                                <button class="delete-member-btn text-slate-400 hover:text-red-600 transition" data-member-id="${member.id}" title="नाम हटाएं">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                                </button>
+                              </td>`;
+                    row.innerHTML = cells;
+                    membersTableBody.appendChild(row);
+                });
+                
+                totalMembersStat.textContent = filteredMembers.length;
+                yearlyPotentialStat.textContent = formatter.format(yearlyPotential);
+                yearlyCollectedStat.textContent = formatter.format(yearlyCollected);
+                yearlyPendingStat.textContent = formatter.format(yearlyPotential - yearlyCollected);
+                
+                if (isCurrentYearView) {
+                    currentMonthPendingStat.textContent = formatter.format(currentMonthPotential - currentMonthCollected);
+                    currentMonthPendingCard.classList.remove('hidden');
+                } else {
+                    currentMonthPendingCard.classList.add('hidden');
+                }
+            }
+            
+            function revertEditingCell() {
+                if (currentlyEditingCell) {
+                    currentlyEditingCell.cell.innerHTML = currentlyEditingCell.originalContent;
+                    currentlyEditingCell = null;
+                }
+            }
+
+            addMemberInlineForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const memberName = document.getElementById('new-member-name').value.trim();
+                const monthlyAmount = parseFloat(document.getElementById('new-monthly-amount').value);
+                const memberPhone = document.getElementById('new-member-phone').value.trim();
+
+                if (memberName && currentUserId && !isNaN(monthlyAmount) && monthlyAmount >= 0) {
+                    try {
+                        const collectionPath = `artifacts/${appId}/users/${currentUserId}/members`;
+                        await addDoc(collection(db, collectionPath), { 
+                            name: memberName, 
+                            monthlyAmount, 
+                            phone: memberPhone,
+                            payments: {}, 
+                            createdAt: serverTimestamp() 
+                        });
+                        addMemberInlineForm.reset();
+                    } catch (error) { showAlert("नया नाम जोड़ने में त्रुटि हुई।", "त्रुटि"); }
+                } else {
+                    showAlert("कृपया नाम और एक मान्य चंदा राशि दर्ज करें।", "अधूरी जानकारी");
+                }
+            });
+            
+            membersTableBody.addEventListener('click', (e) => {
+                const paymentCell = e.target.closest('.payment-cell');
+                if (paymentCell) {
+                    const memberId = paymentCell.dataset.memberId;
+                    const member = allMembers.find(m => m.id === memberId);
+                    if(member && member.monthlyAmount > 0) showPaymentModal(member, paymentCell.dataset.monthKey);
+                    return; 
+                }
+
+                const deleteButton = e.target.closest('.delete-member-btn');
+                if (deleteButton) {
+                     const memberId = deleteButton.dataset.memberId;
+                     const memberName = deleteButton.closest('tr').cells[0].textContent;
+                     showConfirm("नाम हटाएं?", `क्या आप वाकई "${memberName}" का नाम हटाना चाहते हैं?`, async () => {
+                        try { await deleteDoc(doc(db, `artifacts/${appId}/users/${currentUserId}/members/${memberId}`)); } 
+                        catch (error) { showAlert("नाम हटाने में त्रुटि हुई।", "त्रुटि"); }
+                     });
+                     return;
+                }
+                
+                const editableAmountCell = e.target.closest('.editable-amount');
+                if (editableAmountCell) {
+                    revertEditingCell(); 
+                    
+                    const memberId = editableAmountCell.dataset.memberId;
+                    const currentAmount = allMembers.find(m => m.id === memberId).monthlyAmount;
+                    
+                    currentlyEditingCell = {
+                        cell: editableAmountCell,
+                        originalContent: editableAmountCell.innerHTML
+                    };
+                    
+                    editableAmountCell.innerHTML = `<input type="number" value="${currentAmount}" class="w-full bg-slate-200 p-1 rounded text-sm outline-none ring-2 ring-green-600"/>`;
+                    const input = editableAmountCell.querySelector('input');
+                    input.focus();
+                    input.select();
+
+                    const saveChanges = async () => {
+                        const newAmount = parseFloat(input.value);
+                        if (!isNaN(newAmount) && newAmount >= 0) {
+                            const memberRef = doc(db, `artifacts/${appId}/users/${currentUserId}/members/${memberId}`);
+                            try {
+                                await updateDoc(memberRef, { monthlyAmount: newAmount });
+                            } catch (error) {
+                                showAlert('राशि अपडेट करने में त्रुटि हुई।', 'त्रुटि');
+                                revertEditingCell(); 
+                            }
+                        } else {
+                           revertEditingCell(); 
+                        }
+                    };
+
+                    input.addEventListener('blur', saveChanges);
+                    input.addEventListener('keydown', (event) => {
+                        if (event.key === 'Enter') {
+                            input.blur(); 
+                        } else if (event.key === 'Escape') {
+                            revertEditingCell();
+                        }
+                    });
+                }
+            });
+
+            paymentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!activePaymentContext || !currentUserId) return;
+                const { member, monthKey } = activePaymentContext;
+                const paymentData = { date: paymentDateInput.value, amount: parseFloat(paymentAmountInput.value) };
+                if (paymentData.date && !isNaN(paymentData.amount) && paymentData.amount >= 0) {
+                    const memberRef = doc(db, `artifacts/${appId}/users/${currentUserId}/members/${member.id}`);
+                    try {
+                        await updateDoc(memberRef, { [`payments.${monthKey}`]: paymentData });
+                        hidePaymentModal();
+                    } catch (error) { showAlert('भुगतान सहेजने में त्रुटि हुई।', 'त्रुटि'); }
+                } else {
+                    showAlert('कृपया एक मान्य तारीख और राशि दर्ज करें।', 'अमान्य इनपुट');
+                }
+            });
+
+            deletePaymentBtn.addEventListener('click', async () => {
+                if (!activePaymentContext || !currentUserId) return;
+                const { member, monthKey } = activePaymentContext;
+                const memberRef = doc(db, `artifacts/${appId}/users/${currentUserId}/members/${member.id}`);
+                try {
+                     const updatedPayments = { ...member.payments };
+                     delete updatedPayments[monthKey];
+                     await updateDoc(memberRef, { payments: updatedPayments });
+                     hidePaymentModal();
+                } catch (error) { showAlert('भुगतान हटाने में त्रुटि हुई।', 'त्रुटि'); }
+            });
+
+            cancelPaymentBtn.addEventListener('click', hidePaymentModal);
+            searchBar.addEventListener('input', renderMembers);
+            yearSelector.addEventListener('change', renderMembers);
+
+            async function main() {
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                    else await signInAnonymously(auth);
+                    currentUserId = auth.currentUser.uid;
+                    const collectionPath = `artifacts/${appId}/users/${currentUserId}/members`;
+                    onSnapshot(collection(db, collectionPath), (snapshot) => {
+                        allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        revertEditingCell();
+                        renderMembers();
+                        loader.classList.add('hidden');
+                        tableSection.classList.remove('hidden');
+                    }, (error) => {
+                         console.error("Data loading error:", error);
+                         loader.innerHTML = `<p class="text-red-500">डेटा लोड करने में त्रुटि हुई। कृपया पृष्ठ को रीफ़्रेश करें।</p>`;
+                    });
+                } catch (error)
+                 {
+                    console.error("App initialization error:", error);
+                    loader.innerHTML = `<p class="text-red-500">एप्लिकेशन प्रारंभ करने में विफल। कृपया पुन: प्रयास करें।</p>`;
+                }
+            }
+            
+            populateYears();
+            main();
+        }
+    </script>
+</body>
+</html>
+
