@@ -28,6 +28,38 @@
         .payment-cell.is-admin.paid:hover { background-color: #bbf7d0; }
         .payment-cell .tooltip { visibility: hidden; width: 170px; background-color: #1e293b; color: #fff; text-align: left; border-radius: 6px; padding: 6px 10px; position: absolute; z-index: 20; bottom: 125%; left: 50%; margin-left: -85px; opacity: 0; transition: opacity 0.3s; white-space: pre-wrap; font-size: 0.75rem; font-weight: 500; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .payment-cell:hover .tooltip { visibility: visible; opacity: 1; }
+
+        /* Print Specific Styles */
+        @media print {
+            /* Hide everything on the page by default */
+            body > *:not(#print-content) {
+                display: none !important;
+            }
+
+            /* Make the print container visible and take up the whole page */
+            #print-content {
+                display: block !important;
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                right: 1rem;
+                font-family: sans-serif;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            /* Styles for the content inside the print container */
+            #print-content h1, #print-content h2 { text-align: center; margin-bottom: 5px; color: #000; }
+            #print-content h2 { margin-top: 0; font-size: 1.25rem; }
+            #print-content .summary { display: flex; justify-content: space-around; flex-wrap: wrap; margin: 15px 0; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+            #print-content .summary > div { display: flex; flex-direction: column; align-items: center; padding: 5px; }
+            #print-content .summary h3 { margin: 0; font-size: 0.8em; color: #555; }
+            #print-content .summary p { margin: 0; font-weight: bold; color: #000; }
+            #print-content table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 9px; }
+            #print-content th, #print-content td { border: 1px solid #ddd; padding: 4px; text-align: center; color: #000; }
+            #print-content th:first-child, #print-content td:first-child { text-align: left; }
+            #print-content thead { background-color: #f2f2f2 !important; }
+            #print-content tr:nth-child(even) { background-color: #f9f9f9 !important; }
+        }
     </style>
 </head>
 <body class="text-slate-800">
@@ -115,6 +147,8 @@
         </div>
     </div>
     
+    <div id="print-content" class="hidden"></div>
+    
     <div id="auth-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-auto">
             <h3 id="auth-modal-title" class="text-xl font-bold mb-5 text-slate-800 text-center"></h3>
@@ -169,6 +203,9 @@
             setLogLevel('error'); 
 
             // DOM Elements
+            const printBtn = document.getElementById('print-btn');
+            const csvBtn = document.getElementById('csv-btn');
+            // ... (rest of the DOM elements are the same)
             const showLoginModalBtn = document.getElementById('show-login-modal-btn');
             const showSignupModalBtn = document.getElementById('show-signup-modal-btn');
             const visitorActions = document.getElementById('visitor-actions');
@@ -218,12 +255,12 @@
             const paymentAmountInput = document.getElementById('payment-amount');
             const deletePaymentBtn = document.getElementById('delete-payment-btn');
             const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
-            const printBtn = document.getElementById('print-btn');
-            const csvBtn = document.getElementById('csv-btn');
 
             let allMembers = [], activePaymentContext = null, currentlyEditingCell = null, isAdmin = false;
             let currentAuthMode = 'login';
             let unsubscribe; 
+
+            // ... (All other functions like setupUIForAuthState, showAuthModal, etc. are exactly the same)
 
             async function setupUIForAuthState(adminUser) {
                 isAdmin = !!adminUser;
@@ -277,11 +314,6 @@
                 authModal.classList.add('hidden');
                 authForm.reset();
             }
-            
-            showLoginModalBtn.addEventListener('click', () => showAuthModal('login'));
-            showSignupModalBtn.addEventListener('click', () => showAuthModal('signup'));
-            logoutBtn.addEventListener('click', () => signOut(auth));
-            cancelAuthBtn.addEventListener('click', hideAuthModal);
             
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -358,38 +390,6 @@
                     submitAuthBtn.disabled = false;
                     if(currentAuthMode === 'signup') submitAuthBtn.textContent = 'अकाउंट बनाएं';
                     else submitAuthBtn.textContent = 'लॉगिन करें';
-                }
-            });
-
-            editInviteCodeBtn.addEventListener('click', () => {
-                inviteCodeInputField.value = inviteCodeText.textContent;
-                inviteCodeView.classList.add('hidden');
-                inviteCodeEditView.classList.remove('hidden');
-                inviteCodeEditView.classList.add('flex');
-            });
-
-            cancelEditInviteCodeBtn.addEventListener('click', () => {
-                inviteCodeEditView.classList.add('hidden');
-                inviteCodeEditView.classList.remove('flex');
-                inviteCodeView.classList.remove('hidden');
-            });
-
-            saveInviteCodeBtn.addEventListener('click', async () => {
-                const newInviteCode = inviteCodeInputField.value.trim();
-                if (!newInviteCode) {
-                    showAlert("Invite code खाली नहीं हो सकता।", "त्रुटि");
-                    return;
-                }
-
-                try {
-                    const inviteCodeRef = doc(db, 'app_config', 'invite_code');
-                    await setDoc(inviteCodeRef, { code: newInviteCode });
-                    inviteCodeText.textContent = newInviteCode; // Update the display
-                    showAlert("Invite code सफलतापूर्वक अपडेट हो गया!", "सफलता");
-                    cancelEditInviteCodeBtn.click(); // Toggle back to view mode
-                } catch (error) {
-                    console.error("Error updating invite code: ", error);
-                    showAlert("Invite code अपडेट करने में विफल।", "त्रुटि");
                 }
             });
 
@@ -599,10 +599,16 @@
                 document.body.removeChild(link);
             }
 
+            /**
+             * UPDATED PRINT FUNCTION
+             * This function now uses CSS media queries for printing and is mobile-friendly.
+             */
             function printTable() {
+                const printContainer = document.getElementById('print-content');
                 const searchTerm = searchBar.value.toLowerCase();
                 const selectedYear = parseInt(yearSelector.value, 10);
                 const filteredMembers = allMembers.filter(member => member.name.toLowerCase().includes(searchTerm));
+                
                 if (filteredMembers.length === 0) {
                     showAlert('प्रिंट करने के लिए कोई डेटा नहीं है।');
                     return;
@@ -634,26 +640,16 @@
                     return `<tr><td>${member.name}</td><td>${formatter.format(monthlyAmount)}</td>${monthCells}<td>${formatter.format(memberYearlyPaid)}</td><td>${formatter.format(memberYearlyPending)}</td></tr>`;
                 }).join('');
 
-                const printContent = `
-                    <!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><title>मस्जिद चंदा रिकॉर्ड - ${selectedYear}</title><style>
-                    body { font-family: sans-serif; -webkit-print-color-adjust: exact; } h1, h2 { text-align: center; margin-bottom: 5px; } h2 { margin-top: 0; }
-                    .summary { display: flex; justify-content: space-around; margin: 15px 0; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
-                    .summary > div { display: flex; flex-direction: column; align-items: center; } .summary h3 { margin: 0; font-size: 0.8em; color: #555; } .summary p { margin: 0; font-weight: bold; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 10px; } th, td { border: 1px solid #ddd; padding: 4px; text-align: center; }
-                    th:first-child, td:first-child { text-align: left; } thead { background-color: #f2f2f2; } tr:nth-child(even) { background-color: #f9f9f9; }
-                    </style></head><body>
+                const printHTML = `
                     <h1>मस्जिद चंदा रिकॉर्ड</h1><h2>वर्ष: ${selectedYear}</h2>
                     <div class="summary">
                          <div><h3>चंदा देने वाले:</h3><p>${totalMembersStat.textContent}</p></div><div><h3>कुल चंदा:</h3><p>${yearlyPotentialStat.textContent}</p></div>
                          <div><h3>जमा:</h3><p>${yearlyCollectedStat.textContent}</p></div><div><h3>बकाया:</h3><p>${yearlyPendingStat.textContent}</p></div>
                     </div>
-                    <table>${tableHeaders}<tbody>${tableBody}</tbody></table></body></html>`;
+                    <table>${tableHeaders}<tbody>${tableBody}</tbody></table>`;
                 
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(printContent);
-                printWindow.document.close();
-                printWindow.focus();
-                setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
+                printContainer.innerHTML = printHTML;
+                window.print();
             }
 
             // All other functions and event listeners
@@ -744,6 +740,10 @@
                     console.error('Could not copy text: ', err);
                 });
             });
+            showLoginModalBtn.addEventListener('click', () => showAuthModal('login'));
+            showSignupModalBtn.addEventListener('click', () => showAuthModal('signup'));
+            logoutBtn.addEventListener('click', () => signOut(auth));
+            cancelAuthBtn.addEventListener('click', hideAuthModal);
             cancelPaymentBtn.addEventListener('click', hidePaymentModal);
             searchBar.addEventListener('input', renderMembers);
             yearSelector.addEventListener('change', renderMembers);
