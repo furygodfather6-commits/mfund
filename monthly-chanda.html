@@ -34,7 +34,6 @@
 
     <div id="app" class="min-h-screen w-full p-4">
         <div class="bg-white border border-slate-200 rounded-xl shadow-lg p-4 w-full flex flex-col h-[calc(100vh-2rem)]">
-            <!-- Header -->
             <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 pb-3 border-b border-slate-200">
                 <div class="flex items-center gap-3">
                     <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.773 2.022a.75.75 0 0 0-1.546 0l-1.02 4.082a.75.75 0 0 1-.726.543H5.409a.75.75 0 0 0-.528 1.284l3.233 3.28a.75.75 0 0 1-.277.99l-1.21 3.84a.75.75 0 0 0 .913 1.01l3.34-2.31a.75.75 0 0 1 .892 0l3.34 2.31a.75.75 0 0 0 .914-1.01l-1.21-3.84a.75.75 0 0 1-.278-.99l3.233-3.28a.75.75 0 0 0-.528-1.284h-4.072a.75.75 0 0 1-.727-.543L12.773 2.022ZM12 10.5a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V10.5ZM5.25 21a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Zm12 0a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Z" /></svg>
@@ -53,6 +52,9 @@
                     
                     <a href="index.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">होम</a>
                     <a href="anya-chanda.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">अन्य चंदा देखें</a>
+                    
+                    <button id="print-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">प्रिंट</button>
+                    <button id="csv-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">CSV डाउनलोड</button>
 
                     <div id="visitor-actions" class="flex gap-2">
                         <button id="show-login-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm w-full">एडमिन लॉगिन</button>
@@ -216,6 +218,8 @@
             const paymentAmountInput = document.getElementById('payment-amount');
             const deletePaymentBtn = document.getElementById('delete-payment-btn');
             const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
+            const printBtn = document.getElementById('print-btn');
+            const csvBtn = document.getElementById('csv-btn');
 
             let allMembers = [], activePaymentContext = null, currentlyEditingCell = null, isAdmin = false;
             let currentAuthMode = 'login';
@@ -391,12 +395,12 @@
 
             function renderTableHeader() {
                 let headers = `<th class="text-left py-2 px-3 font-semibold text-green-800 sticky left-0 bg-green-50 w-[180px]">नाम</th>
-                               <th class="text-left py-2 px-3 font-semibold text-green-800 w-[120px]">फ़ोन नंबर</th>
-                               <th class="text-left py-2 px-3 font-semibold text-green-800 w-[100px]">मासिक चंदा</th>`;
+                                       <th class="text-left py-2 px-3 font-semibold text-green-800 w-[120px]">फ़ोन नंबर</th>
+                                       <th class="text-left py-2 px-3 font-semibold text-green-800 w-[100px]">मासिक चंदा</th>`;
                 const months = ['जन', 'फ़र', 'मार्च', 'अप्रै', 'मई', 'जून', 'जुला', 'अग', 'सितं', 'अक्टू', 'नवं', 'दिसं'];
                 months.forEach(month => { headers += `<th class="text-center py-2 px-2 font-semibold text-green-800 min-w-[70px]">${month}</th>`; });
                 headers += `<th class="text-left py-2 px-3 font-bold text-green-700 w-[100px]">कुल जमा</th>
-                            <th class="text-left py-2 px-3 font-bold text-red-700 w-[100px]">कुल बकाया</th>`;
+                                    <th class="text-left py-2 px-3 font-bold text-red-700 w-[100px]">कुल बकाया</th>`;
                 if (isAdmin) {
                     headers += `<th class="text-center py-2 px-2 font-semibold text-green-800">एक्शन</th>`;
                 }
@@ -471,10 +475,10 @@
                     cells += `<td class="py-2 px-3 font-bold text-red-600 w-[100px]">${formatter.format(memberYearlyPending)}</td>`;
                     if (isAdmin) {
                         cells += `<td class="text-center py-2 px-2">
-                                    <button class="delete-member-btn text-slate-400 hover:text-red-600 transition" data-member-id="${member.id}" title="नाम हटाएं">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
-                                    </button>
-                                  </td>`;
+                                        <button class="delete-member-btn text-slate-400 hover:text-red-600 transition" data-member-id="${member.id}" title="नाम हटाएं">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                                        </button>
+                                    </td>`;
                     }
                     row.innerHTML = cells;
                     membersTableBody.appendChild(row);
@@ -514,10 +518,10 @@
                         } catch (error) {
                              console.error("Anonymous sign-in failed", error);
                              if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
-                                loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">कनेक्शन विफल!</p><p class="text-sm">कृपया अपने Firebase प्रोजेक्ट की Authentication -> Sign-in method सेटिंग्स में जाएं और 'Anonymous' साइन-इन को इनेबल करें।</p></div>`;
-                            } else {
-                                loader.innerHTML = `<p class="text-red-500">डेटाबेस से कनेक्ट नहीं हो सका।</p>`;
-                            }
+                                 loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">कनेक्शन विफल!</p><p class="text-sm">कृपया अपने Firebase प्रोजेक्ट की Authentication -> Sign-in method सेटिंग्स में जाएं और 'Anonymous' साइन-इन को इनेबल करें।</p></div>`;
+                             } else {
+                                 loader.innerHTML = `<p class="text-red-500">डेटाबेस से कनेक्ट नहीं हो सका।</p>`;
+                             }
                             return;
                         }
                     }
@@ -539,6 +543,118 @@
                 });
             }
 
+            function exportToCSV() {
+                const searchTerm = searchBar.value.toLowerCase();
+                const selectedYear = parseInt(yearSelector.value, 10);
+                const filteredMembers = allMembers.filter(member => member.name.toLowerCase().includes(searchTerm));
+                if (filteredMembers.length === 0) {
+                    showAlert('निर्यात करने के लिए कोई डेटा नहीं है।');
+                    return;
+                }
+                filteredMembers.sort((a, b) => a.name.localeCompare(b.name, 'hi'));
+
+                const headers = ["नाम", "फ़ोन नंबर", "मासिक चंदा", "जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर", "कुल जमा", "कुल बकाया"];
+
+                let csvContent = "\uFEFF"; // BOM for UTF-8 Excel compatibility
+                csvContent += headers.join(",") + "\n";
+
+                filteredMembers.forEach(member => {
+                    const monthlyAmount = member.monthlyAmount || 0;
+                    let memberYearlyPaid = 0;
+                    const rowData = [
+                        `"${member.name.replace(/"/g, '""')}"`, // Handle quotes in name
+                        member.phone || '',
+                        monthlyAmount
+                    ];
+
+                    let monthPayments = [];
+                    for (let i = 0; i < 12; i++) {
+                        const monthIndex = i + 1;
+                        const monthKey = `${selectedYear}-${String(monthIndex).padStart(2, '0')}`;
+                        const payment = member.payments?.[monthKey];
+                        const paidAmount = payment ? parseFloat(payment.amount || 0) : 0;
+                        monthPayments.push(paidAmount);
+                        memberYearlyPaid += paidAmount;
+                    }
+                    
+                    rowData.push(...monthPayments);
+                    
+                    const memberYearlyPotential = monthlyAmount * 12;
+                    const memberYearlyPending = memberYearlyPotential - memberYearlyPaid;
+                    
+                    rowData.push(memberYearlyPaid);
+                    rowData.push(memberYearlyPending);
+                    
+                    csvContent += rowData.join(",") + "\n";
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `masjid_chanda_${selectedYear}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            function printTable() {
+                const searchTerm = searchBar.value.toLowerCase();
+                const selectedYear = parseInt(yearSelector.value, 10);
+                const filteredMembers = allMembers.filter(member => member.name.toLowerCase().includes(searchTerm));
+                if (filteredMembers.length === 0) {
+                    showAlert('प्रिंट करने के लिए कोई डेटा नहीं है।');
+                    return;
+                }
+                filteredMembers.sort((a, b) => a.name.localeCompare(b.name, 'hi'));
+                const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+                const tableHeaders = `<thead><tr><th>नाम</th><th>मासिक चंदा</th>${['जन', 'फ़र', 'मार्च', 'अप्रै', 'मई', 'जून', 'जुला', 'अग', 'सितं', 'अक्टू', 'नवं', 'दिसं'].map(m => `<th>${m}</th>`).join('')}<th>कुल जमा</th><th>कुल बकाया</th></tr></thead>`;
+                
+                const tableBody = filteredMembers.map(member => {
+                    const monthlyAmount = member.monthlyAmount || 0;
+                    let memberYearlyPaid = 0;
+                    let monthCells = '';
+                    for (let i = 0; i < 12; i++) {
+                        const monthIndex = i + 1;
+                        const monthKey = `${selectedYear}-${String(monthIndex).padStart(2, '0')}`;
+                        const payment = member.payments?.[monthKey];
+                        const paidAmount = payment ? parseFloat(payment.amount || 0) : 0;
+                        memberYearlyPaid += paidAmount;
+                        
+                        let cellText = (paidAmount >= monthlyAmount) ? '✔' : (paidAmount > 0 ? `${formatter.format(paidAmount)}` : '—');
+                        if (monthlyAmount <= 0) cellText = '-';
+                        monthCells += `<td>${cellText}</td>`;
+                    }
+                    
+                    const memberYearlyPotential = monthlyAmount * 12;
+                    const memberYearlyPending = memberYearlyPotential - memberYearlyPaid;
+                    
+                    return `<tr><td>${member.name}</td><td>${formatter.format(monthlyAmount)}</td>${monthCells}<td>${formatter.format(memberYearlyPaid)}</td><td>${formatter.format(memberYearlyPending)}</td></tr>`;
+                }).join('');
+
+                const printContent = `
+                    <!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><title>मस्जिद चंदा रिकॉर्ड - ${selectedYear}</title><style>
+                    body { font-family: sans-serif; -webkit-print-color-adjust: exact; } h1, h2 { text-align: center; margin-bottom: 5px; } h2 { margin-top: 0; }
+                    .summary { display: flex; justify-content: space-around; margin: 15px 0; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+                    .summary > div { display: flex; flex-direction: column; align-items: center; } .summary h3 { margin: 0; font-size: 0.8em; color: #555; } .summary p { margin: 0; font-weight: bold; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 10px; } th, td { border: 1px solid #ddd; padding: 4px; text-align: center; }
+                    th:first-child, td:first-child { text-align: left; } thead { background-color: #f2f2f2; } tr:nth-child(even) { background-color: #f9f9f9; }
+                    </style></head><body>
+                    <h1>मस्जिद चंदा रिकॉर्ड</h1><h2>वर्ष: ${selectedYear}</h2>
+                    <div class="summary">
+                         <div><h3>चंदा देने वाले:</h3><p>${totalMembersStat.textContent}</p></div><div><h3>कुल चंदा:</h3><p>${yearlyPotentialStat.textContent}</p></div>
+                         <div><h3>जमा:</h3><p>${yearlyCollectedStat.textContent}</p></div><div><h3>बकाया:</h3><p>${yearlyPendingStat.textContent}</p></div>
+                    </div>
+                    <table>${tableHeaders}<tbody>${tableBody}</tbody></table></body></html>`;
+                
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
+            }
 
             // All other functions and event listeners
             function revertEditingCell() { if (currentlyEditingCell) { currentlyEditingCell.cell.innerHTML = currentlyEditingCell.originalContent; currentlyEditingCell = null; } }
@@ -631,6 +747,8 @@
             cancelPaymentBtn.addEventListener('click', hidePaymentModal);
             searchBar.addEventListener('input', renderMembers);
             yearSelector.addEventListener('change', renderMembers);
+            printBtn.addEventListener('click', printTable);
+            csvBtn.addEventListener('click', exportToCSV);
             function showConfirm(title, message, onConfirm) { modalTitle.textContent = title; modalBody.innerHTML = message; modalActions.innerHTML = ''; const confirmBtn = document.createElement('button'); confirmBtn.textContent = 'हाँ'; confirmBtn.className = 'text-sm bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700'; confirmBtn.onclick = () => { hideConfirm(); onConfirm(); }; const cancelBtn = document.createElement('button'); cancelBtn.textContent = 'नहीं'; cancelBtn.className = 'text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300'; cancelBtn.onclick = hideConfirm; modalActions.append(confirmBtn, cancelBtn); confirmationModal.classList.remove('hidden'); confirmationModal.classList.add('flex'); }
             function hideConfirm() { confirmationModal.classList.add('hidden'); }
             function showAlert(message, title = "सूचना") { modalTitle.textContent = title; modalBody.innerHTML = message; modalActions.innerHTML = ''; const okBtn = document.createElement('button'); okBtn.textContent = 'ठीक है'; okBtn.className = 'text-sm bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800'; okBtn.onclick = hideConfirm; modalActions.appendChild(okBtn); confirmationModal.classList.remove('hidden'); confirmationModal.classList.add('flex'); }
@@ -643,7 +761,3 @@
     </script>
 </body>
 </html>
-
-
-
-
