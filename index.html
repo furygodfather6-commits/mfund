@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>मस्जिद चंदा रिकॉर्ड</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -34,6 +34,7 @@
 
     <div id="app" class="min-h-screen w-full p-4">
         <div class="bg-white border border-slate-200 rounded-xl shadow-lg p-4 w-full flex flex-col h-[calc(100vh-2rem)]">
+            <!-- Header -->
             <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 pb-3 border-b border-slate-200">
                 <div class="flex items-center gap-3">
                     <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.773 2.022a.75.75 0 0 0-1.546 0l-1.02 4.082a.75.75 0 0 1-.726.543H5.409a.75.75 0 0 0-.528 1.284l3.233 3.28a.75.75 0 0 1-.277.99l-1.21 3.84a.75.75 0 0 0 .913 1.01l3.34-2.31a.75.75 0 0 1 .892 0l3.34 2.31a.75.75 0 0 0 .914-1.01l-1.21-3.84a.75.75 0 0 1-.278-.99l3.233-3.28a.75.75 0 0 0-.528-1.284h-4.072a.75.75 0 0 1-.727-.543L12.773 2.022ZM12 10.5a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V10.5ZM5.25 21a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Zm12 0a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Z" /></svg>
@@ -49,26 +50,45 @@
                 <div class="flex flex-col md:flex-row gap-2 shrink-0">
                     <input type="text" id="search-bar" placeholder="खोजें..." class="border border-slate-300 rounded-md flex-grow p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400">
                     <select id="year-selector" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition"></select>
-                    <button id="login-btn" class="hidden bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
-                        <span>एडमिन लॉगिन</span>
-                    </button>
-                    <button id="logout-btn" class="hidden bg-red-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-red-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
-                        <span>लॉगआउट</span>
-                    </button>
-                    <div id="admin-controls" class="hidden">
-                        <form id="add-member-inline-form" class="flex-grow md:flex-grow-0 flex gap-2">
-                            <input type="text" id="new-member-name" placeholder="नया नाम..." class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full md:w-32" required>
-                            <input type="number" id="new-monthly-amount" placeholder="चंदा" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full md:w-20" required min="0">
-                            <input type="tel" id="new-member-phone" placeholder="फ़ोन" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full md:w-28">
-                            <button type="submit" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                                <span class="hidden sm:inline">जोड़ें</span>
-                            </button>
-                        </form>
+                    
+                    <div id="visitor-actions" class="flex gap-2">
+                        <button id="show-login-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm w-full">लॉगिन करें</button>
+                        <button id="show-signup-modal-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm w-full">नया अकाउंट बनाएं</button>
+                    </div>
+
+                    <div id="admin-area" class="hidden items-center gap-2">
+                         <div id="invite-code-display" class="hidden items-baseline gap-2 bg-slate-100 px-3 py-2 rounded-md">
+                            <div id="invite-code-view" class="flex items-baseline gap-2">
+                                <h3 class="text-xs font-semibold text-slate-500">Invite Code:</h3>
+                                <p id="invite-code-text" class="text-base font-bold text-green-800 cursor-pointer" title="कॉपी करने के लिए क्लिक करें"></p>
+                                <button id="edit-invite-code-btn" class="text-slate-400 hover:text-green-600 transition ml-2" title="Edit Invite Code">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                                </button>
+                            </div>
+                            <div id="invite-code-edit-view" class="hidden items-center gap-2">
+                                <input type="text" id="invite-code-input" class="text-sm border border-slate-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-green-600">
+                                <button id="save-invite-code-btn" class="bg-green-600 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-green-700">सेव</button>
+                                <button id="cancel-edit-invite-code-btn" class="bg-slate-200 text-slate-700 text-xs font-semibold py-1 px-2 rounded-md hover:bg-slate-300">रद्द</button>
+                            </div>
+                        </div>
+                        <button id="logout-btn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-red-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
+                            <span>लॉगआउट</span>
+                        </button>
                     </div>
                 </div>
+            </div>
+
+            <div id="admin-controls" class="hidden py-3 border-b border-slate-200">
+                <form id="add-member-inline-form" class="flex-grow md:flex-grow-0 flex flex-wrap gap-2">
+                    <input type="text" id="new-member-name" placeholder="नया नाम..." class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full sm:w-auto sm:flex-1" required>
+                    <input type="number" id="new-monthly-amount" placeholder="चंदा" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full sm:w-24" required min="0">
+                    <input type="tel" id="new-member-phone" placeholder="फ़ोन (वैकल्पिक)" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full sm:w-auto sm:flex-1">
+                    <button type="submit" class="bg-green-700 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm w-full sm:w-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                        <span>जोड़ें</span>
+                    </button>
+                </form>
             </div>
             
             <div id="loader-container" class="flex justify-center items-center py-12 flex-grow"><div class="loader"></div></div>
@@ -82,7 +102,10 @@
                         <tbody id="members-table-body" class="text-sm"></tbody>
                     </table>
                 </div>
-                 <div id="no-members" class="text-center py-12 text-slate-500 hidden"><p class="text-lg font-semibold">कोई चंदा देने वाला नहीं मिला।</p><p id="no-members-subtitle" class="text-sm">शुरू करने के लिए एडमिन के रूप में लॉगिन करें और "जोड़ें" बटन का उपयोग करें।</p></div>
+                 <div id="no-members" class="text-center py-12 text-slate-500 hidden">
+                    <p class="text-lg font-semibold">कोई डेटा नहीं मिला।</p>
+                    <p id="no-members-subtitle" class="text-sm">अपना रिकॉर्ड देखने के लिए कृपया लॉगिन करें, या एक नया एडमिन अकाउंट बनाएं।</p>
+                </div>
             </div>
         </div>
     </div>
@@ -91,15 +114,21 @@
         <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-auto">
             <h3 id="auth-modal-title" class="text-xl font-bold mb-5 text-slate-800 text-center"></h3>
             <form id="auth-form">
-                <div class="mb-4">
-                    <label for="auth-email" class="block text-sm font-medium text-slate-700 mb-1">ईमेल</label>
-                    <input type="email" id="auth-email" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                <div id="registration-fields">
+                    <div class="mb-4">
+                        <label for="auth-email" class="block text-sm font-medium text-slate-700 mb-1">ईमेल</label>
+                        <input type="email" id="auth-email" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                    </div>
+                    <div class="mb-5">
+                        <label for="auth-password" class="block text-sm font-medium text-slate-700 mb-1">पासवर्ड (कम से कम 6 अक्षर)</label>
+                        <input type="password" id="auth-password" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                    </div>
                 </div>
-                <div class="mb-5">
-                    <label for="auth-password" class="block text-sm font-medium text-slate-700 mb-1">पासवर्ड</label>
-                    <input type="password" id="auth-password" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                <div id="invite-code-field" class="hidden mb-5">
+                    <label for="invite-code" class="block text-sm font-medium text-slate-700 mb-1">Secret Invite Code</label>
+                    <input type="text" id="invite-code" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600">
                 </div>
-                 <p id="auth-error" class="text-red-600 text-sm text-center mb-4 h-5"></p>
+                <p id="auth-error" class="text-red-600 text-sm text-center mb-4 h-5"></p>
                 <div class="flex items-center gap-3">
                     <button type="button" id="cancel-auth-btn" class="w-full text-sm bg-slate-200 text-slate-800 font-semibold py-2.5 px-4 rounded-lg hover:bg-slate-300">रद्द करें</button>
                     <button type="submit" id="submit-auth-btn" class="w-full text-sm bg-green-700 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-green-800"></button>
@@ -113,8 +142,8 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, getDocs, query, limit, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDDpEUw4ATVqzhrBlMT2xRsJbfMO2hYSpc",
@@ -134,20 +163,31 @@
             const auth = getAuth(app);
             setLogLevel('error'); 
 
-            const loginBtn = document.getElementById('login-btn');
+            // DOM Elements
+            const showLoginModalBtn = document.getElementById('show-login-modal-btn');
+            const showSignupModalBtn = document.getElementById('show-signup-modal-btn');
+            const visitorActions = document.getElementById('visitor-actions');
             const logoutBtn = document.getElementById('logout-btn');
+            const adminArea = document.getElementById('admin-area');
+            const inviteCodeDisplay = document.getElementById('invite-code-display');
+            const inviteCodeText = document.getElementById('invite-code-text');
+            const editInviteCodeBtn = document.getElementById('edit-invite-code-btn');
+            const inviteCodeView = document.getElementById('invite-code-view');
+            const inviteCodeEditView = document.getElementById('invite-code-edit-view');
+            const inviteCodeInput = document.getElementById('invite-code-input');
+            const saveInviteCodeBtn = document.getElementById('save-invite-code-btn');
+            const cancelEditInviteCodeBtn = document.getElementById('cancel-edit-invite-code-btn');
             const adminControls = document.getElementById('admin-controls');
             const authModal = document.getElementById('auth-modal');
             const authModalTitle = document.getElementById('auth-modal-title');
             const authForm = document.getElementById('auth-form');
+            const inviteCodeField = document.getElementById('invite-code-field');
             const authEmailInput = document.getElementById('auth-email');
             const authPasswordInput = document.getElementById('auth-password');
             const authError = document.getElementById('auth-error');
             const cancelAuthBtn = document.getElementById('cancel-auth-btn');
             const submitAuthBtn = document.getElementById('submit-auth-btn');
             const tableHeaderRow = document.getElementById('table-header-row');
-            
-            // Other DOM elements
             const addMemberInlineForm = document.getElementById('add-member-inline-form');
             const membersTableBody = document.getElementById('members-table-body');
             const searchBar = document.getElementById('search-bar');
@@ -155,6 +195,12 @@
             const loader = document.getElementById('loader-container');
             const tableSection = document.getElementById('table-section');
             const noMembersMessage = document.getElementById('no-members');
+            const totalMembersStat = document.getElementById('total-members-stat');
+            const yearlyPotentialStat = document.getElementById('yearly-potential-stat');
+            const yearlyCollectedStat = document.getElementById('yearly-collected-stat');
+            const yearlyPendingStat = document.getElementById('yearly-pending-stat');
+            const currentMonthPendingCard = document.getElementById('current-month-pending-card');
+            const currentMonthPendingStat = document.getElementById('current-month-pending-stat');
             const confirmationModal = document.getElementById('confirmation-modal');
             const modalTitle = document.getElementById('modal-title');
             const modalBody = document.getElementById('modal-body');
@@ -166,31 +212,60 @@
             const paymentAmountInput = document.getElementById('payment-amount');
             const deletePaymentBtn = document.getElementById('delete-payment-btn');
             const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
-            const totalMembersStat = document.getElementById('total-members-stat');
-            const yearlyPotentialStat = document.getElementById('yearly-potential-stat');
-            const yearlyCollectedStat = document.getElementById('yearly-collected-stat');
-            const yearlyPendingStat = document.getElementById('yearly-pending-stat');
-            const currentMonthPendingCard = document.getElementById('current-month-pending-card');
-            const currentMonthPendingStat = document.getElementById('current-month-pending-stat');
 
-            let allMembers = [], activePaymentContext = null, currentlyEditingCell = null, isAdmin = false, isFirstRun = false;
-            let currentCollectionPath = 'public_chanda/default_user/members';
+            let allMembers = [], activePaymentContext = null, currentlyEditingCell = null, isAdmin = false;
+            let currentAuthMode = 'login';
+            let unsubscribe; 
 
-            function setupUIForAuthState(user) {
+            async function setupUIForAuthState(user) {
                 isAdmin = !!user;
-                loginBtn.classList.toggle('hidden', isAdmin);
-                logoutBtn.classList.toggle('hidden', !isAdmin);
+                visitorActions.classList.toggle('hidden', isAdmin);
+                adminArea.classList.toggle('hidden', !isAdmin);
+                adminArea.classList.toggle('flex', isAdmin);
                 adminControls.classList.toggle('hidden', !isAdmin);
-                document.getElementById('no-members-subtitle').classList.toggle('hidden', isAdmin);
+                
+                if (!isAdmin) {
+                    allMembers = [];
+                    tableSection.classList.add('hidden');
+                    noMembersMessage.classList.remove('hidden');
+                    inviteCodeDisplay.classList.add('hidden');
+                } else {
+                    tableSection.classList.remove('hidden');
+                    noMembersMessage.classList.add('hidden');
+                    try {
+                        const inviteCodeRef = doc(db, 'app_config', 'invite_code');
+                        const docSnap = await getDoc(inviteCodeRef);
+                        if (docSnap.exists()) {
+                            inviteCodeText.textContent = docSnap.data().code;
+                            inviteCodeDisplay.classList.remove('hidden');
+                            inviteCodeDisplay.classList.add('flex');
+                        }
+                    } catch (error) {
+                        console.error("Could not fetch invite code:", error);
+                    }
+                }
                 renderTableHeader();
                 renderMembers();
             }
 
-            function showAuthModal(isSignup = false) {
-                isFirstRun = isSignup;
-                authModalTitle.textContent = isSignup ? 'पहला एडमिन अकाउंट बनाएं' : 'एडमिन लॉगिन';
-                submitAuthBtn.textContent = isSignup ? 'अकाउंट बनाएं' : 'लॉगिन करें';
+            function showAuthModal(mode) {
+                currentAuthMode = mode;
                 authError.textContent = '';
+                authForm.reset();
+                
+                if (mode === 'signup') {
+                    inviteCodeField.classList.remove('hidden');
+                    inviteCodeInput.required = true;
+                    authModalTitle.textContent = 'नया एडमिन अकाउंट बनाएं';
+                    inviteCodeInput.placeholder = 'Secret Code डालें या बनाएं';
+                    submitAuthBtn.textContent = 'अकाउंट बनाएं';
+                } else { // Login
+                    inviteCodeField.classList.add('hidden');
+                    inviteCodeInput.required = false;
+                    authModalTitle.textContent = 'एडमिन लॉगिन';
+                    submitAuthBtn.textContent = 'लॉगिन करें';
+                }
+                
                 authModal.classList.remove('hidden');
                 authModal.classList.add('flex');
             }
@@ -199,37 +274,117 @@
                 authForm.reset();
             }
             
-            loginBtn.addEventListener('click', () => showAuthModal(isFirstRun));
+            showLoginModalBtn.addEventListener('click', () => showAuthModal('login'));
+            showSignupModalBtn.addEventListener('click', () => showAuthModal('signup'));
             logoutBtn.addEventListener('click', () => signOut(auth));
             cancelAuthBtn.addEventListener('click', hideAuthModal);
             
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                authError.textContent = '';
                 const email = authEmailInput.value;
                 const password = authPasswordInput.value;
-                authError.textContent = '';
                 
+                submitAuthBtn.disabled = true;
+
                 try {
-                    if (isFirstRun) {
+                    if (currentAuthMode === 'signup') {
+                        submitAuthBtn.textContent = 'बनाया जा रहा है...';
+                        const inviteCode = inviteCodeInput.value.trim();
+                        if (!inviteCode) throw new Error("Secret Code डालना ज़रूरी है।");
+
                         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                        // FIX: Create a document for the admin user so the app knows it's not the first run anymore.
-                        const adminDocRef = doc(db, 'public_chanda', userCredential.user.uid);
-                        await setDoc(adminDocRef, { adminEmail: email, createdAt: serverTimestamp() });
-                    } else {
+                        const user = userCredential.user;
+
+                        try {
+                            const inviteCodeRef = doc(db, 'app_config', 'invite_code');
+                            const docSnap = await getDoc(inviteCodeRef);
+                            let isValidCode = false;
+
+                            if (docSnap.exists()) {
+                                if (inviteCode === docSnap.data().code) isValidCode = true;
+                            } else {
+                                isValidCode = true;
+                            }
+
+                            if (!isValidCode) throw new Error("गलत Secret Code।");
+
+                            if (!docSnap.exists()) {
+                                await setDoc(inviteCodeRef, { code: inviteCode });
+                            }
+                            const userDocRef = doc(db, `admins/${user.uid}`);
+                            await setDoc(userDocRef, { ownerEmail: email, createdAt: serverTimestamp() });
+
+                        } catch (validationError) {
+                            if (user) {
+                                try { await user.delete(); } catch (delErr) { console.error("Cleanup failed:", delErr); }
+                            }
+                            throw validationError;
+                        }
+                    } else { 
+                        submitAuthBtn.textContent = 'लॉगिन हो रहा है...';
                         await signInWithEmailAndPassword(auth, email, password);
                     }
                     hideAuthModal();
                 } catch (error) {
-                    console.error("Auth error:", error.code);
-                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                         authError.textContent = 'गलत ईमेल या पासवर्ड।';
-                    } else if (error.code === 'auth/email-already-in-use') {
-                        authError.textContent = 'यह ईमेल पहले से मौजूद है।';
-                    } else if (error.code === 'auth/weak-password') {
-                        authError.textContent = 'पासवर्ड कमज़ोर है (कम से कम 6 अक्षर)।';
-                    } else {
-                        authError.textContent = 'एक त्रुटि हुई, कृपया पुनः प्रयास करें।';
+                    authError.textContent = error.message;
+                    if (error.code) {
+                        switch (error.code) {
+                            case 'auth/operation-not-allowed':
+                                authError.textContent = 'साइन-इन मेथड बंद है। Firebase में इनेबल करें।';
+                                break;
+                            case 'auth/invalid-credential':
+                            case 'auth/user-not-found':
+                            case 'auth/wrong-password':
+                                authError.textContent = 'गलत ईमेल या पासवर्ड।';
+                                break;
+                            case 'auth/email-already-in-use':
+                                authError.textContent = 'यह ईमेल पहले से मौजूद है।';
+                                break;
+                            case 'auth/weak-password':
+                                authError.textContent = 'पासवर्ड कमज़ोर है (कम से कम 6 अक्षर)।';
+                                break;
+                            default:
+                                console.error("Authentication error:", error);
+                                authError.textContent = 'एक अनपेक्षित त्रुटि हुई।';
+                        }
                     }
+                } finally {
+                    submitAuthBtn.disabled = false;
+                    if(currentAuthMode === 'signup') submitAuthBtn.textContent = 'अकाउंट बनाएं';
+                    else submitAuthBtn.textContent = 'लॉगिन करें';
+                }
+            });
+
+            editInviteCodeBtn.addEventListener('click', () => {
+                inviteCodeInput.value = inviteCodeText.textContent;
+                inviteCodeView.classList.add('hidden');
+                inviteCodeEditView.classList.remove('hidden');
+                inviteCodeEditView.classList.add('flex');
+            });
+
+            cancelEditInviteCodeBtn.addEventListener('click', () => {
+                inviteCodeEditView.classList.add('hidden');
+                inviteCodeEditView.classList.remove('flex');
+                inviteCodeView.classList.remove('hidden');
+            });
+
+            saveInviteCodeBtn.addEventListener('click', async () => {
+                const newInviteCode = inviteCodeInput.value.trim();
+                if (!newInviteCode) {
+                    showAlert("Invite code खाली नहीं हो सकता।", "त्रुटि");
+                    return;
+                }
+
+                try {
+                    const inviteCodeRef = doc(db, 'app_config', 'invite_code');
+                    await setDoc(inviteCodeRef, { code: newInviteCode });
+                    inviteCodeText.textContent = newInviteCode; // Update the display
+                    showAlert("Invite code सफलतापूर्वक अपडेट हो गया!", "सफलता");
+                    cancelEditInviteCodeBtn.click(); // Toggle back to view mode
+                } catch (error) {
+                    console.error("Error updating invite code: ", error);
+                    showAlert("Invite code अपडेट करने में विफल।", "त्रुटि");
                 }
             });
 
@@ -252,16 +407,18 @@
                 const selectedYear = parseInt(yearSelector.value, 10);
                 const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
                 const filteredMembers = allMembers.filter(member => member.name.toLowerCase().includes(searchTerm));
-
                 membersTableBody.innerHTML = '';
-                noMembersMessage.classList.toggle('hidden', allMembers.length > 0);
-                if (filteredMembers.length === 0 && allMembers.length > 0) {
-                     noMembersMessage.classList.remove('hidden');
-                     noMembersMessage.querySelector('p').textContent = 'इस खोज से कोई नाम मेल नहीं खाता।';
+                if (isAdmin) {
+                    noMembersMessage.classList.toggle('hidden', allMembers.length > 0 || !isAdmin);
+                    if (filteredMembers.length === 0 && allMembers.length > 0) {
+                        noMembersMessage.classList.remove('hidden');
+                        noMembersMessage.querySelector('p').textContent = 'इस खोज से कोई नाम मेल नहीं खाता।';
+                    } else {
+                        noMembersMessage.querySelector('p').textContent = 'कोई चंदा देने वाला नहीं मिला।';
+                    }
                 } else {
-                     noMembersMessage.querySelector('p').textContent = 'कोई चंदा देने वाला नहीं मिला।';
+                     noMembersMessage.classList.remove('hidden');
                 }
-                
                 let yearlyCollected = 0, yearlyPotential = 0, currentMonthCollected = 0, currentMonthPotential = 0;
                 const systemCurrentYear = new Date().getFullYear();
                 const systemCurrentMonth = new Date().getMonth() + 1;
@@ -327,49 +484,53 @@
                 }
             }
             
-            async function main() {
+            function main() {
                 populateYears();
-                onAuthStateChanged(auth, async (user) => {
-                    setupUIForAuthState(user);
-                    let collectionRef;
-                    if (user) {
-                        // Logged in user is the admin
-                        collectionRef = collection(db, `public_chanda/${user.uid}/members`);
-                    } else {
-                        // Not logged in, check if any data exists to determine if it's the first run
-                        const publicDataRef = collection(db, 'public_chanda');
-                        const q = query(publicDataRef, limit(1));
-                        const snapshot = await getDocs(q);
-                        if (snapshot.empty) {
-                            // No data anywhere, this is the first time anyone is visiting.
-                            isFirstRun = true;
-                            loginBtn.classList.remove('hidden'); // Show login button to trigger account creation
-                            loader.classList.add('hidden');
-                            tableSection.classList.remove('hidden');
-                            noMembersMessage.classList.remove('hidden');
-                            noMembersMessage.querySelector('p').textContent = 'आपका स्वागत है! शुरू करने के लिए एडमिन अकाउंट बनाएं।';
-                            return; 
-                        } else {
-                            // Data exists, so visitors can view the first available record.
-                            const firstAdminId = snapshot.docs[0].id;
-                            collectionRef = collection(db, `public_chanda/${firstAdminId}/members`);
-                        }
-                    }
+                loader.classList.remove('hidden');
+                tableSection.classList.add('hidden');
+                noMembersMessage.classList.add('hidden');
 
-                    onSnapshot(collectionRef, (snapshot) => {
-                        allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        revertEditingCell();
+                onAuthStateChanged(auth, async (user) => {
+                    if (unsubscribe) unsubscribe();
+                    loader.classList.remove('hidden');
+                    tableSection.classList.add('hidden');
+                    
+                    if (user) {
+                        const adminDocRef = doc(db, "admins", user.uid);
+                        try {
+                            const adminDocSnap = await getDoc(adminDocRef);
+                            
+                            if (adminDocSnap.exists()) {
+                                await setupUIForAuthState(user); 
+                                const collectionRef = collection(db, 'chanda_data/shared/members');
+                                unsubscribe = onSnapshot(collectionRef, (snapshot) => {
+                                    allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                                    revertEditingCell();
+                                    renderMembers();
+                                }, (error) => {
+                                    console.error("Data loading error:", error);
+                                });
+                            } else {
+                                await setupUIForAuthState(null);
+                                allMembers = [];
+                                renderMembers();
+                            }
+                        } catch (e) {
+                            console.error("Error checking for admin status:", e);
+                            await setupUIForAuthState(null);
+                            allMembers = [];
+                            renderMembers();
+                        }
+                    } else {
+                        await setupUIForAuthState(null);
+                        allMembers = [];
                         renderMembers();
-                        loader.classList.add('hidden');
-                        tableSection.classList.remove('hidden');
-                    }, (error) => {
-                         console.error("Data loading error:", error);
-                         loader.innerHTML = `<p class="text-red-500">डेटा लोड करने में त्रुटि हुई।</p>`;
-                    });
+                    }
+                    loader.classList.add('hidden');
                 });
             }
 
-            // All other functions (showConfirm, showAlert, etc.) and event listeners remain the same
+            // All other functions and event listeners
             function revertEditingCell() { if (currentlyEditingCell) { currentlyEditingCell.cell.innerHTML = currentlyEditingCell.originalContent; currentlyEditingCell = null; } }
             addMemberInlineForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -379,7 +540,7 @@
                 const user = auth.currentUser;
                 if (memberName && user && !isNaN(monthlyAmount) && monthlyAmount >= 0) {
                     try {
-                        const collectionPath = `public_chanda/${user.uid}/members`;
+                        const collectionPath = 'chanda_data/shared/members';
                         await addDoc(collection(db, collectionPath), { name: memberName, monthlyAmount, phone: memberPhone, payments: {}, createdAt: serverTimestamp() });
                         addMemberInlineForm.reset();
                     } catch (error) { showAlert("नया नाम जोड़ने में त्रुटि हुई।", "त्रुटि"); }
@@ -399,8 +560,8 @@
                      const memberId = deleteButton.dataset.memberId;
                      const memberName = deleteButton.closest('tr').cells[0].textContent;
                      showConfirm("नाम हटाएं?", `क्या आप वाकई "${memberName}" का नाम हटाना चाहते हैं?`, async () => {
-                        try { await deleteDoc(doc(db, `public_chanda/${auth.currentUser.uid}/members/${memberId}`)); } 
-                        catch (error) { showAlert("नाम हटाने में त्रुटि हुई।", "त्रुटि"); }
+                         try { await deleteDoc(doc(db, `chanda_data/shared/members/${memberId}`)); } 
+                         catch (error) { showAlert("नाम हटाने में त्रुटि हुई।", "त्रुटि"); }
                      });
                      return;
                 }
@@ -417,7 +578,7 @@
                     const saveChanges = async () => {
                         const newAmount = parseFloat(input.value);
                         if (!isNaN(newAmount) && newAmount >= 0) {
-                            const memberRef = doc(db, `public_chanda/${auth.currentUser.uid}/members/${memberId}`);
+                            const memberRef = doc(db, `chanda_data/shared/members/${memberId}`);
                             try { await updateDoc(memberRef, { monthlyAmount: newAmount }); } 
                             catch (error) { showAlert('राशि अपडेट करने में त्रुटि हुई।', 'त्रुटि'); revertEditingCell(); }
                         } else { revertEditingCell(); }
@@ -432,7 +593,7 @@
                 const { member, monthKey } = activePaymentContext;
                 const paymentData = { date: paymentDateInput.value, amount: parseFloat(paymentAmountInput.value) };
                 if (paymentData.date && !isNaN(paymentData.amount) && paymentData.amount >= 0) {
-                    const memberRef = doc(db, `public_chanda/${auth.currentUser.uid}/members/${member.id}`);
+                    const memberRef = doc(db, `chanda_data/shared/members/${member.id}`);
                     try {
                         await updateDoc(memberRef, { [`payments.${monthKey}`]: paymentData });
                         hidePaymentModal();
@@ -442,7 +603,7 @@
             deletePaymentBtn.addEventListener('click', async () => {
                 if (!activePaymentContext || !auth.currentUser) return;
                 const { member, monthKey } = activePaymentContext;
-                const memberRef = doc(db, `public_chanda/${auth.currentUser.uid}/members/${member.id}`);
+                const memberRef = doc(db, `chanda_data/shared/members/${member.id}`);
                 try {
                      const updatedPayments = { ...member.payments };
                      delete updatedPayments[monthKey];
@@ -450,10 +611,16 @@
                      hidePaymentModal();
                 } catch (error) { showAlert('भुगतान हटाने में त्रुटि हुई।', 'त्रुटि'); }
             });
+            inviteCodeText.addEventListener('click', () => {
+                navigator.clipboard.writeText(inviteCodeText.textContent).then(() => {
+                    showAlert('Invite code copied to clipboard!');
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            });
             cancelPaymentBtn.addEventListener('click', hidePaymentModal);
             searchBar.addEventListener('input', renderMembers);
             yearSelector.addEventListener('change', renderMembers);
-            // Re-use other functions
             function showConfirm(title, message, onConfirm) { modalTitle.textContent = title; modalBody.innerHTML = message; modalActions.innerHTML = ''; const confirmBtn = document.createElement('button'); confirmBtn.textContent = 'हाँ'; confirmBtn.className = 'text-sm bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700'; confirmBtn.onclick = () => { hideConfirm(); onConfirm(); }; const cancelBtn = document.createElement('button'); cancelBtn.textContent = 'नहीं'; cancelBtn.className = 'text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300'; cancelBtn.onclick = hideConfirm; modalActions.append(confirmBtn, cancelBtn); confirmationModal.classList.remove('hidden'); confirmationModal.classList.add('flex'); }
             function hideConfirm() { confirmationModal.classList.add('hidden'); }
             function showAlert(message, title = "सूचना") { modalTitle.textContent = title; modalBody.innerHTML = message; modalActions.innerHTML = ''; const okBtn = document.createElement('button'); okBtn.textContent = 'ठीक है'; okBtn.className = 'text-sm bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800'; okBtn.onclick = hideConfirm; modalActions.appendChild(okBtn); confirmationModal.classList.remove('hidden'); confirmationModal.classList.add('flex'); }
