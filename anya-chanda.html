@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मस्जिद आमदनी-खर्च रिकॉर्ड</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { color-scheme: light; }
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; }
+        .table-container { flex-grow: 1; overflow: auto; }
+        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-container::-webkit-scrollbar-track { background: #dcfce7; }
+        .table-container::-webkit-scrollbar-thumb { background: #86efac; border-radius: 3px; }
+        thead th { position: sticky; top: 0; z-index: 10; background-color: #f9fafb; }
+        .loader { border: 5px solid #e2e8f0; border-top: 5px solid #15803d; border-radius: 50%; width: 40px; height: 40px; animation: spin 1.5s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .tab-btn {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
+            font-weight: 600;
+            color: #475569;
+        }
+        .tab-btn.active {
+            color: #166534;
+            border-bottom-color: #22c55e;
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: flex;
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background-color: #fff; }
+            .no-print { display: none !important; }
+            #app, .bg-white, #app > div {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                height: auto !important;
+            }
+            .tab-pane { display: none !important; padding: 0 !important; }
+            .tab-pane.active { display: block !important; }
+            .table-container { overflow: visible !important; height: auto !important; }
+            thead { background-color: #f1f5f9 !important; }
+            tr, h2, p { page-break-inside: avoid; }
+            h2 { font-size: 18pt !important; }
+            #report-content div[class*="bg-"] {
+                background-color: #fff !important;
+                border: 1px solid #ccc !important;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div id="app" class="min-h-screen w-full p-4">
+        <div class="bg-white border border-slate-200 rounded-xl shadow-lg p-4 w-full flex flex-col h-[calc(100vh-2rem)]">
+            <!-- Header -->
+            <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 pb-3 border-b border-slate-200 no-print">
+                <div class="flex items-center gap-3">
+                    <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                    </svg>
+                    <h2 class="text-xl font-bold text-green-800 shrink-0">मस्जिद आमदनी-खर्च रिकॉर्ड</h2>
+                </div>
+                <div id="summary-section" class="flex items-baseline gap-2 bg-green-50 px-4 py-2 rounded-lg">
+                    <h3 class="text-sm font-semibold text-slate-600">कुल आमदनी:</h3>
+                    <p id="total-collected-stat" class="text-lg font-bold text-green-800">₹0</p>
+                </div>
+                <div class="flex flex-col md:flex-row gap-2 shrink-0">
+                     <a href="homepage.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">होम</a>
+                     <a href="index.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">मासिक चंदा देखें</a>
+                     <select id="year-selector" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition no-print"></select>
+                     <button id="print-btn" class="bg-blue-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-blue-700 transition-all duration-300 flex items-center justify-center gap-2 text-sm">प्रिंट करें</button>
+                    <div id="visitor-actions" class="flex gap-2">
+                        <button id="show-login-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm w-full">एडमिन लॉगिन</button>
+                        <button id="show-signup-modal-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm w-full">नया अकाउंट बनाएं</button>
+                    </div>
+                    <div id="admin-area" class="hidden items-center gap-2">
+                         <div id="invite-code-display" class="hidden items-baseline gap-2 bg-slate-100 px-3 py-2 rounded-md">
+                            <div id="invite-code-view" class="flex items-baseline gap-2">
+                                <h3 class="text-xs font-semibold text-slate-500">Invite Code:</h3>
+                                <p id="invite-code-text" class="text-base font-bold text-green-800 cursor-pointer" title="कॉपी करने के लिए क्लिक करें"></p>
+                                <button id="edit-invite-code-btn" class="text-slate-400 hover:text-green-600 transition ml-2" title="Edit Invite Code">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                                </button>
+                            </div>
+                            <div id="invite-code-edit-view" class="hidden items-center gap-2">
+                                <input type="text" id="invite-code-input-field" class="text-sm border border-slate-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-green-600">
+                                <button id="save-invite-code-btn" class="bg-green-600 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-green-700">सेव</button>
+                                <button id="cancel-edit-invite-code-btn" class="bg-slate-200 text-slate-700 text-xs font-semibold py-1 px-2 rounded-md hover:bg-slate-300">रद्द</button>
+                            </div>
+                        </div>
+                        <button id="logout-btn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-red-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm">
+                            <span>लॉगआउट</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabs Navigation -->
+            <div id="tabs" class="flex items-center border-b border-slate-200 overflow-x-auto no-print">
+                <button class="tab-btn active" data-tab="juma">जुमा</button>
+                <button class="tab-btn" data-tab="tyohar">त्योहार</button>
+                <button class="tab-btn" data-tab="marammat">मरम्मत / तामीर</button>
+                <button class="tab-btn" data-tab="aamdan">अन्य आमदनी</button>
+                <button class="tab-btn" data-tab="kharch">खर्च</button>
+                <button class="tab-btn" data-tab="tankhwah">तनख्वाह</button>
+                <button class="tab-btn" data-tab="report">रिपोर्ट</button>
+            </div>
+
+            <div id="controls-bar" class="py-3 border-b border-slate-200">
+                 <div class="flex justify-between items-center">
+                    <div id="admin-controls" class="hidden">
+                        <button id="add-record-btn" class="bg-green-700 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                            <span id="add-record-btn-text">नया जुमा चंदा जोड़ें</span>
+                        </button>
+                    </div>
+                    <input type="text" id="search-bar" placeholder="इस Tab में खोजें..." class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400">
+                    <div id="tab-summary" class="text-right">
+                        <p class="text-sm font-semibold text-slate-600">इस Tab का कुल: <span id="tab-total" class="font-bold text-lg text-green-800">₹0</span></p>
+                    </div>
+                 </div>
+            </div>
+            
+            <div id="loader-container" class="flex justify-center items-center py-12 flex-grow"><div class="loader"></div></div>
+
+            <!-- Tab Content Panes -->
+            <div id="tab-content-wrapper" class="flex-grow flex flex-col">
+                <div id="juma-content" class="tab-pane active flex-col flex-grow"></div>
+                <div id="tyohar-content" class="tab-pane flex-col flex-grow"></div>
+                <div id="marammat-content" class="tab-pane flex-col flex-grow"></div>
+                <div id="aamdan-content" class="tab-pane flex-col flex-grow"></div>
+                <div id="kharch-content" class="tab-pane flex-col flex-grow"></div>
+                <div id="tankhwah-content" class="tab-pane flex-col flex-grow"></div>
+                <div id="report-content" class="tab-pane flex-col flex-grow p-4 space-y-6">
+                    <div class="flex flex-col sm:flex-row gap-4 items-center p-4 bg-slate-50 rounded-lg border no-print">
+                        <div class="flex-1 w-full">
+                            <label for="start-date" class="block text-sm font-medium text-slate-700 mb-1">से (Start Date)</label>
+                            <input type="date" id="start-date" class="w-full text-sm border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+                        </div>
+                        <div class="flex-1 w-full">
+                            <label for="end-date" class="block text-sm font-medium text-slate-700 mb-1">तक (End Date)</label>
+                            <input type="date" id="end-date" class="w-full text-sm border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-600">
+                        </div>
+                        <div class="flex gap-2 self-end pt-5">
+                            <button id="filter-btn" class="bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800">लागू करें</button>
+                            <button id="reset-filter-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300">रीसेट</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-green-100 border border-green-200 p-6 rounded-xl text-center">
+                            <h4 class="text-lg font-semibold text-green-800">कुल आमदनी</h4>
+                            <p id="report-total-income" class="text-4xl font-bold text-green-700 mt-2">₹0</p>
+                        </div>
+                        <div class="bg-red-100 border border-red-200 p-6 rounded-xl text-center">
+                            <h4 class="text-lg font-semibold text-red-800">कुल खर्च</h4>
+                            <p id="report-total-expense" class="text-4xl font-bold text-red-700 mt-2">₹0</p>
+                        </div>
+                        <div class="bg-blue-100 border border-blue-200 p-6 rounded-xl text-center">
+                            <h4 class="text-lg font-semibold text-blue-800">कुल बचत</h4>
+                            <p id="report-net-balance" class="text-4xl font-bold text-blue-700 mt-2">₹0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-auto">
+            <h3 id="auth-modal-title" class="text-xl font-bold mb-5 text-slate-800 text-center"></h3>
+            <form id="auth-form">
+                <div id="registration-fields">
+                    <div class="mb-4">
+                        <label for="auth-email" class="block text-sm font-medium text-slate-700 mb-1">ईमेल</label>
+                        <input type="email" id="auth-email" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                    </div>
+                    <div class="mb-5">
+                        <label for="auth-password" class="block text-sm font-medium text-slate-700 mb-1">पासवर्ड (कम से कम 6 अक्षर)</label>
+                        <input type="password" id="auth-password" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                    </div>
+                </div>
+                <div id="invite-code-field" class="hidden mb-5">
+                    <label for="invite-code" class="block text-sm font-medium text-slate-700 mb-1">Secret Invite Code</label>
+                    <input type="text" id="invite-code" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600">
+                </div>
+                <p id="auth-error" class="text-red-600 text-sm text-center mb-4 h-5"></p>
+                <div class="flex items-center gap-3">
+                    <button type="button" id="cancel-auth-btn" class="w-full text-sm bg-slate-200 text-slate-800 font-semibold py-2.5 px-4 rounded-lg hover:bg-slate-300">रद्द करें</button>
+                    <button type="submit" id="submit-auth-btn" class="w-full text-sm bg-green-700 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-green-800"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="record-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-xl shadow-lg p-5 w-full max-w-md mx-auto">
+            <h3 id="record-modal-title" class="text-lg font-bold mb-5 text-slate-800 text-center"></h3>
+            <form id="record-form">
+                <div class="mb-3">
+                    <label for="record-date" class="block text-xs font-medium text-slate-700 mb-1">तारीख</label>
+                    <input type="date" id="record-date" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                </div>
+                <div class="mb-3">
+                    <label for="record-name" class="block text-xs font-medium text-slate-700 mb-1">नाम / विषय</label>
+                    <input type="text" id="record-name" placeholder="चंदा देने वाले का नाम" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                </div>
+                 <div class="mb-3">
+                    <label for="record-description" class="block text-xs font-medium text-slate-700 mb-1">विवरण</label>
+                    <input type="text" id="record-description" placeholder="मक़सद, जैसे जुमा कलेक्शन, तामीर, आदि।" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                </div>
+                <div class="mb-5">
+                    <label for="record-amount" class="block text-xs font-medium text-slate-700 mb-1">रकम (₹)</label>
+                    <input type="number" id="record-amount" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required min="0">
+                </div>
+                <div class="flex justify-end items-center gap-3">
+                    <button type="button" id="cancel-record-btn" class="text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300">रद्द करें</button>
+                    <button type="submit" id="save-record-btn" class="text-sm bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800">सेव करें</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="confirmation-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 no-print"><div class="bg-white rounded-xl shadow-lg p-5 w-full max-w-sm mx-auto text-center"><h3 id="modal-title" class="text-lg font-bold mb-3 text-slate-800"></h3><p id="modal-body" class="mb-5 text-sm text-slate-600"></p><div id="modal-actions" class="flex justify-center gap-3"></div></div></div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDpEUw4ATVqzhrBlMT2xRsJbfMO2hYSpc",
+            authDomain: "mffund-cff0a.firebaseapp.com",
+            projectId: "mffund-cff0a",
+            storageBucket: "mffund-cff0a.firebasestorage.app",
+            messagingSenderId: "5155894047",
+            appId: "1:5155894047:web:0956e587a14722aa23762a",  
+            measurementId: "G-7S1FSEH156"
+        };
+        
+        const collections = {
+            juma: { name: 'जुमा', collection: 'juma_collections', type: 'income' },
+            tyohar: { name: 'त्योहार', collection: 'festival_funds', type: 'income' },
+            marammat: { name: 'मरम्मत / तामीर', collection: 'repair_funds', type: 'income' },
+            aamdan: { name: 'अन्य आमदनी', collection: 'general_income', type: 'income' },
+            kharch: { name: 'खर्च', collection: 'expenses', type: 'expense' },
+            tankhwah: { name: 'तनख्वाह', collection: 'salaries', type: 'expense' }
+        };
+
+        if (!firebaseConfig.apiKey) {
+            document.getElementById('app').innerHTML = `<div class="p-8 text-center"><h2 class="text-2xl font-bold text-red-600">Firebase Config Missing!</h2></div>`;
+        } else {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+            setLogLevel('error');
+
+            const visitorActions = document.getElementById('visitor-actions');
+            const adminArea = document.getElementById('admin-area');
+            const adminControls = document.getElementById('admin-controls');
+            const totalCollectedStat = document.getElementById('total-collected-stat');
+            const loader = document.getElementById('loader-container');
+            const authModal = document.getElementById('auth-modal');
+            const recordModal = document.getElementById('record-modal');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const showLoginModalBtn = document.getElementById('show-login-modal-btn');
+            const showSignupModalBtn = document.getElementById('show-signup-modal-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const addRecordBtn = document.getElementById('add-record-btn');
+            const cancelAuthBtn = document.getElementById('cancel-auth-btn');
+            const cancelRecordBtn = document.getElementById('cancel-record-btn');
+            const authForm = document.getElementById('auth-form');
+            const recordForm = document.getElementById('record-form');
+            const tabsContainer = document.getElementById('tabs');
+            const tabContentWrapper = document.getElementById('tab-content-wrapper');
+            const searchBar = document.getElementById('search-bar');
+            const printBtn = document.getElementById('print-btn');
+            const tabSummary = document.getElementById('tab-summary');
+            const inviteCodeText = document.getElementById('invite-code-text');
+            const editInviteCodeBtn = document.getElementById('edit-invite-code-btn');
+            const inviteCodeView = document.getElementById('invite-code-view');
+            const inviteCodeEditView = document.getElementById('invite-code-edit-view');
+            const inviteCodeInputField = document.getElementById('invite-code-input-field');
+            const saveInviteCodeBtn = document.getElementById('save-invite-code-btn');
+            const cancelEditInviteCodeBtn = document.getElementById('cancel-edit-invite-code-btn');
+            const authError = document.getElementById('auth-error');
+            const yearSelector = document.getElementById('year-selector');
+
+
+            let dataStore = {};
+            let isAdmin = false;
+            let currentRecord = null;
+            let activeTab = 'juma';
+            let unsubscribes = [];
+            let currentAuthMode = 'login';
+
+
+            function setupUI(adminUser) {
+                isAdmin = !!adminUser;
+                visitorActions.classList.toggle('hidden', isAdmin);
+                adminArea.classList.toggle('hidden', !isAdmin);
+                adminControls.classList.toggle('hidden', !isAdmin || activeTab === 'report');
+                if(isAdmin) {
+                    fetchAndShowInviteCode();
+                }
+                updateAllTables(); 
+            }
+
+            async function fetchAndShowInviteCode() {
+                 try {
+                    const inviteCodeRef = doc(db, 'app_config', 'invite_code');
+                    const docSnap = await getDoc(inviteCodeRef);
+                    if (docSnap.exists()) {
+                        document.getElementById('invite-code-text').textContent = docSnap.data().code;
+                        document.getElementById('invite-code-display').classList.remove('hidden');
+                        document.getElementById('invite-code-display').classList.add('flex');
+                    }
+                } catch (error) {
+                    console.error("Could not fetch invite code:", error);
+                }
+            }
+            
+            function createTableHTML(tabKey) {
+                return `
+                    <div class="table-container">
+                        <table class="min-w-full text-sm">
+                            <thead>
+                                <tr class="text-xs text-slate-500 uppercase">
+                                    <th class="text-left py-3 px-4 font-semibold">#</th>
+                                    <th class="text-left py-3 px-4 font-semibold">तारीख</th>
+                                    <th class="text-left py-3 px-4 font-semibold">नाम / विषय</th>
+                                    <th class="text-left py-3 px-4 font-semibold">विवरण</th>
+                                    <th class="text-right py-3 px-4 font-semibold">रकम (₹)</th>
+                                    <th class="action-header text-center py-3 px-4 font-semibold ${isAdmin ? '' : 'hidden'}">एक्शन</th>
+                                </tr>
+                            </thead>
+                            <tbody class="data-table-body text-slate-700"></tbody>
+                        </table>
+                    </div>
+                    <div class="no-data-msg text-center py-12 text-slate-500 hidden">
+                        <p class="text-lg font-semibold">कोई रिकॉर्ड नहीं मिला।</p>
+                        <p class="no-data-subtitle text-sm"></p>
+                    </div>
+                `;
+            }
+
+            function renderTableForTab(tabKey) {
+                const contentPane = document.getElementById(`${tabKey}-content`);
+                if (!contentPane.innerHTML) {
+                    contentPane.innerHTML = createTableHTML(tabKey);
+                }
+
+                const tableBody = contentPane.querySelector('.data-table-body');
+                const noDataMsg = contentPane.querySelector('.no-data-msg');
+                const noDataSubtitle = contentPane.querySelector('.no-data-subtitle');
+                const actionHeader = contentPane.querySelector('.action-header');
+                
+                tableBody.innerHTML = '';
+                actionHeader.classList.toggle('hidden', !isAdmin);
+                
+                const selectedYear = yearSelector.value;
+                const searchTerm = searchBar.value.toLowerCase();
+                const allRecords = dataStore[tabKey] || [];
+                
+                const yearFilteredRecords = allRecords.filter(rec => rec.date.startsWith(selectedYear));
+                
+                const records = yearFilteredRecords.filter(rec => 
+                    rec.name.toLowerCase().includes(searchTerm) || 
+                    rec.description.toLowerCase().includes(searchTerm)
+                );
+                
+                const hasRecords = records.length > 0;
+                
+                contentPane.querySelector('.table-container').classList.toggle('hidden', !hasRecords);
+                noDataMsg.classList.toggle('hidden', hasRecords);
+                if (!hasRecords && searchTerm) {
+                    noDataMsg.querySelector('p').textContent = 'इस खोज से कोई रिकॉर्ड मेल नहीं खाता।';
+                    noDataSubtitle.textContent = '';
+                } else if (!hasRecords) {
+                     noDataMsg.querySelector('p').textContent = 'कोई रिकॉर्ड नहीं मिला।';
+                     noDataSubtitle.textContent = isAdmin ? `पहला रिकॉर्ड जोड़ने के लिए ऊपर दिए गए बटन का उपयोग करें।` : 'अभी कोई रिकॉर्ड नहीं है।';
+                }
+
+                const sortedRecords = [...records].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                sortedRecords.forEach((record, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-slate-200/80 hover:bg-slate-50';
+                    const formattedDate = new Date(record.date + 'T00:00:00').toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+                    const formattedAmount = new Intl.NumberFormat('en-IN').format(record.amount);
+                    const amountClass = collections[tabKey].type === 'expense' ? 'text-red-700' : 'text-green-700';
+
+                    let cells = `<td class="py-3 px-4">${index + 1}</td>
+                                 <td class="py-3 px-4">${formattedDate}</td>
+                                 <td class="py-3 px-4 font-semibold">${record.name}</td>
+                                 <td class="py-3 px-4 text-slate-600">${record.description}</td>
+                                 <td class="py-3 px-4 text-right font-bold ${amountClass}">${formattedAmount}</td>`;
+                    
+                    if (isAdmin) {
+                        cells += `<td class="py-3 px-4 text-center">
+                                    <button class="edit-btn text-slate-400 hover:text-blue-600 p-1" data-id="${record.id}" title="एडिट करें">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                    <button class="delete-btn text-slate-400 hover:text-red-600 p-1" data-id="${record.id}" title="हटाएं">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                  </td>`;
+                    } else {
+                        cells += `<td class="py-3 px-4"></td>`;
+                    }
+                    row.innerHTML = cells;
+                    tableBody.appendChild(row);
+                });
+                
+                if (tabKey === activeTab) updateTabSummary();
+                updateGrandTotal();
+            }
+            
+            function updateAllTables() { Object.keys(collections).forEach(key => renderTableForTab(key)); }
+
+            function updateTabSummary() {
+                const selectedYear = yearSelector.value;
+                const records = (dataStore[activeTab] || []).filter(rec => rec.date.startsWith(selectedYear));
+                const tabTotal = records.reduce((sum, record) => sum + record.amount, 0);
+                document.getElementById('tab-total').textContent = `₹${new Intl.NumberFormat('en-IN').format(tabTotal)}`;
+            }
+
+            function updateGrandTotal() {
+                const selectedYear = yearSelector.value;
+                let grandTotal = 0;
+                Object.keys(collections).forEach(key => {
+                    if(collections[key].type === 'income') {
+                        const yearFilteredRecords = (dataStore[key] || []).filter(rec => rec.date.startsWith(selectedYear));
+                        grandTotal += yearFilteredRecords.reduce((sum, record) => sum + record.amount, 0);
+                    }
+                });
+                totalCollectedStat.textContent = `₹${new Intl.NumberFormat('en-IN').format(grandTotal)}`;
+            }
+
+            function calculateAndDisplayReport() {
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+
+                let totalIncome = 0;
+                let totalExpense = 0;
+
+                Object.keys(collections).forEach(key => {
+                    const records = dataStore[key] || [];
+                    const filteredRecords = records.filter(rec => {
+                        if (!startDate && !endDate) return true;
+                        if (startDate && rec.date < startDate) return false;
+                        if (endDate && rec.date > endDate) return false;
+                        return true;
+                    });
+
+                    const sum = filteredRecords.reduce((acc, rec) => acc + rec.amount, 0);
+
+                    if (collections[key].type === 'income') {
+                        totalIncome += sum;
+                    } else {
+                        totalExpense += sum;
+                    }
+                });
+                
+                const netBalance = totalIncome - totalExpense;
+                document.getElementById('report-total-income').textContent = `₹${new Intl.NumberFormat('en-IN').format(totalIncome)}`;
+                document.getElementById('report-total-expense').textContent = `₹${new Intl.NumberFormat('en-IN').format(totalExpense)}`;
+                document.getElementById('report-net-balance').textContent = `₹${new Intl.NumberFormat('en-IN').format(netBalance)}`;
+                document.getElementById('report-net-balance').classList.toggle('text-red-700', netBalance < 0);
+                document.getElementById('report-net-balance').classList.toggle('text-blue-700', netBalance >= 0);
+            }
+
+            async function main() {
+                loader.classList.remove('hidden');
+                populateYears();
+
+                onAuthStateChanged(auth, async (user) => {
+                    unsubscribes.forEach(unsub => unsub());
+                    unsubscribes = [];
+                    
+                    let currentUser = user;
+                    
+                    if (!currentUser) {
+                        try {
+                           const userCred = await signInAnonymously(auth);
+                           currentUser = userCred.user;
+                        } catch(error) {
+                            console.error("Anonymous sign-in failed", error);
+                            loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">कनेक्शन विफल!</p><p class="text-sm">सुनिश्चित करें कि Firebase में 'Anonymous' साइन-इन इनेबल है।</p></div>`;
+                            return;
+                        }
+                    }
+
+                    let isRealAdmin = false;
+                    if (currentUser && !currentUser.isAnonymous) {
+                        const adminDocRef = doc(db, "admins", currentUser.uid);
+                        const adminDocSnap = await getDoc(adminDocRef);
+                        isRealAdmin = adminDocSnap.exists();
+                    }
+                    await setupUI(isRealAdmin ? currentUser : null);
+
+                    Object.keys(collections).forEach(key => {
+                        const collectionName = collections[key].collection;
+                        const collectionRef = collection(db, `chanda_data/shared/${collectionName}`);
+                        const unsub = onSnapshot(collectionRef, (snapshot) => {
+                            dataStore[key] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            renderTableForTab(key);
+                            if (activeTab === 'report') calculateAndDisplayReport();
+                            loader.classList.add('hidden');
+                        }, (error) => {
+                            console.error(`Error loading ${key}:`, error);
+                            document.getElementById(`${key}-content`).innerHTML = `<p class="p-4 text-red-600 text-center">इस श्रेणी का डेटा लोड नहीं हो सका।</p>`;
+                        });
+                        unsubscribes.push(unsub);
+                    });
+                });
+            }
+
+            // --- Modal and Form Logic ---
+            function showAuthModal(mode) {
+                currentAuthMode = mode;
+                authForm.reset();
+                const authModalTitle = document.getElementById('auth-modal-title');
+                const inviteCodeField = document.getElementById('invite-code-field');
+                const inviteCodeInput = document.getElementById('invite-code');
+                const submitBtn = document.getElementById('submit-auth-btn');
+
+                if (mode === 'signup') {
+                    authModalTitle.textContent = 'नया एडमिन अकाउंट बनाएं';
+                    inviteCodeField.classList.remove('hidden');
+                    inviteCodeInput.required = true;
+                    inviteCodeInput.placeholder = 'Secret Code डालें या बनाएं';
+                    submitBtn.textContent = 'अकाउंट बनाएं';
+                } else {
+                    authModalTitle.textContent = 'एडमिन लॉगिन';
+                    inviteCodeField.classList.add('hidden');
+                    inviteCodeInput.required = false;
+                    submitBtn.textContent = 'लॉगिन करें';
+                }
+                authModal.classList.remove('hidden');
+                authModal.classList.add('flex');
+            }
+
+            function showRecordModal(record = null) {
+                recordForm.reset();
+                currentRecord = record;
+                const modalTitleEl = document.getElementById('record-modal-title');
+                const nameLabel = recordForm.querySelector('label[for="record-name"]');
+                const nameInput = document.getElementById('record-name');
+                const descLabel = recordForm.querySelector('label[for="record-description"]');
+                const isExpense = collections[activeTab].type === 'expense';
+                nameLabel.textContent = isExpense ? 'खर्च का विषय' : 'नाम';
+                nameInput.placeholder = isExpense ? 'जैसे - बिजली का बिल, सफाई' : 'चंदा देने वाले का नाम';
+                descLabel.textContent = isExpense ? 'अतिरिक्त विवरण' : 'विवरण';
+                
+                if (record) {
+                    modalTitleEl.textContent = 'रिकॉर्ड एडिट करें';
+                    document.getElementById('record-date').value = record.date;
+                    nameInput.value = record.name;
+                    document.getElementById('record-description').value = record.description;
+                    document.getElementById('record-amount').value = record.amount;
+                } else {
+                    modalTitleEl.textContent = `नया ${collections[activeTab].name} जोड़ें`;
+                    document.getElementById('record-date').valueAsDate = new Date();
+                }
+                recordModal.classList.remove('hidden');
+                recordModal.classList.add('flex');
+            }
+
+            function hideRecordModal() { recordModal.classList.add('hidden'); }
+            function hideAuthModal() { authModal.classList.add('hidden'); }
+
+            addRecordBtn.addEventListener('click', () => showRecordModal());
+            showLoginModalBtn.addEventListener('click', () => showAuthModal('login'));
+            showSignupModalBtn.addEventListener('click', () => showAuthModal('signup'));
+            cancelRecordBtn.addEventListener('click', hideRecordModal);
+            cancelAuthBtn.addEventListener('click', hideAuthModal);
+            logoutBtn.addEventListener('click', () => signOut(auth));
+            
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                authError.textContent = '';
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                
+                try {
+                    if (currentAuthMode === 'signup') {
+                        const inviteCode = document.getElementById('invite-code').value.trim();
+                        if (!inviteCode) throw new Error("Secret Code डालना ज़रूरी है।");
+
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        const user = userCredential.user;
+
+                        try {
+                            const inviteCodeRef = doc(db, 'app_config', 'invite_code');
+                            const docSnap = await getDoc(inviteCodeRef);
+                            let isValidCode = false;
+
+                            if (docSnap.exists()) {
+                                if (inviteCode === docSnap.data().code) isValidCode = true;
+                            } else {
+                                isValidCode = true;
+                            }
+
+                            if (!isValidCode) throw new Error("गलत Secret Code।");
+
+                            if (!docSnap.exists()) {
+                                await setDoc(inviteCodeRef, { code: inviteCode });
+                            }
+                            const userDocRef = doc(db, `admins/${user.uid}`);
+                            await setDoc(userDocRef, { ownerEmail: email, createdAt: serverTimestamp() });
+
+                        } catch (validationError) {
+                            if (user) { try { await user.delete(); } catch (delErr) { console.error("Cleanup failed:", delErr); } }
+                            throw validationError;
+                        }
+                    } else { 
+                        await signInWithEmailAndPassword(auth, email, password);
+                    }
+                    hideAuthModal();
+                } catch (error) {
+                    authError.textContent = error.message;
+                }
+            });
+
+            recordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = {
+                    date: document.getElementById('record-date').value,
+                    name: document.getElementById('record-name').value.trim(),
+                    description: document.getElementById('record-description').value.trim(),
+                    amount: parseFloat(document.getElementById('record-amount').value)
+                };
+
+                if (!formData.date || !formData.name || !formData.description || isNaN(formData.amount)) {
+                    showAlert('कृपया सभी फ़ील्ड भरें।', 'अधूरी जानकारी'); return;
+                }
+                
+                const collectionName = collections[activeTab].collection;
+                try {
+                    if (currentRecord) {
+                        const docRef = doc(db, `chanda_data/shared/${collectionName}`, currentRecord.id);
+                        await updateDoc(docRef, formData);
+                    } else {
+                        await addDoc(collection(db, `chanda_data/shared/${collectionName}`), { ...formData, createdAt: serverTimestamp() });
+                    }
+                    hideRecordModal();
+                } catch (error) {
+                    console.error("Error saving record: ", error);
+                    showAlert("रिकॉर्ड सेव करने में त्रुटि हुई।");
+                }
+            });
+
+            tabContentWrapper.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-btn');
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (!isAdmin || (!editBtn && !deleteBtn)) return;
+                
+                const collectionName = collections[activeTab].collection;
+                const dataArray = dataStore[activeTab];
+
+                if (editBtn) {
+                    const recordId = editBtn.dataset.id;
+                    const recordToEdit = dataArray.find(d => d.id === recordId);
+                    if (recordToEdit) showRecordModal(recordToEdit);
+                }
+                if (deleteBtn) {
+                    const recordId = deleteBtn.dataset.id;
+                     const recordToDelete = dataArray.find(d => d.id === recordId);
+                     showConfirm("हटाने की पुष्टि करें", `क्या आप वाकई इस रिकॉर्ड को हटाना चाहते हैं?<br>(${recordToDelete.name} - ₹${recordToDelete.amount})`, async () => {
+                         try { 
+                            await deleteDoc(doc(db, `chanda_data/shared/${collectionName}`, recordId)); 
+                         } catch (error) { 
+                            showAlert("हटाने में त्रुटि हुई।"); 
+                         }
+                     });
+                }
+            });
+            
+            tabsContainer.addEventListener('click', (e) => {
+                const tabButton = e.target.closest('.tab-btn');
+                if (!tabButton) return;
+                
+                activeTab = tabButton.dataset.tab;
+                
+                tabsContainer.querySelector('.active').classList.remove('active');
+                tabButton.classList.add('active');
+                
+                tabContentWrapper.querySelector('.active').classList.remove('active');
+                document.getElementById(`${activeTab}-content`).classList.add('active');
+                
+                const isReportTab = activeTab === 'report';
+                adminControls.classList.toggle('hidden', !isAdmin || isReportTab);
+                searchBar.classList.toggle('hidden', isReportTab);
+                tabSummary.classList.toggle('hidden', isReportTab);
+                document.getElementById('controls-bar').classList.toggle('no-print', isReportTab);
+
+                if(!isReportTab) {
+                    document.getElementById('add-record-btn-text').textContent = `नया ${collections[activeTab].name} जोड़ें`;
+                    updateTabSummary();
+                    renderTableForTab(activeTab); // Re-render with search
+                } else {
+                    calculateAndDisplayReport();
+                }
+            });
+
+            // Feature Listeners
+            searchBar.addEventListener('input', () => renderTableForTab(activeTab));
+            printBtn.addEventListener('click', () => window.print());
+            document.getElementById('filter-btn').addEventListener('click', calculateAndDisplayReport);
+            document.getElementById('reset-filter-btn').addEventListener('click', () => {
+                document.getElementById('start-date').value = '';
+                document.getElementById('end-date').value = '';
+                calculateAndDisplayReport();
+            });
+
+            function populateYears() { 
+                const currentYear = new Date().getFullYear(); 
+                for (let year = 2050; year >= 2023; year--) { 
+                    const option = document.createElement('option'); 
+                    option.value = year; 
+                    option.textContent = year; 
+                    if (year === currentYear) option.selected = true; 
+                    yearSelector.appendChild(option); 
+                } 
+            }
+            yearSelector.addEventListener('change', () => {
+                updateAllTables();
+            });
+
+             // --- Utility Modals ---
+            function showConfirm(title, message, onConfirm) { 
+                document.getElementById('modal-title').textContent = title; 
+                document.getElementById('modal-body').innerHTML = message; 
+                const actions = document.getElementById('modal-actions');
+                actions.innerHTML = ''; 
+                const confirmBtn = document.createElement('button'); 
+                confirmBtn.textContent = 'हाँ, हटाएं'; 
+                confirmBtn.className = 'text-sm bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700'; 
+                confirmBtn.onclick = () => { hideConfirm(); onConfirm(); }; 
+                const cancelBtn = document.createElement('button'); 
+                cancelBtn.textContent = 'नहीं'; 
+                cancelBtn.className = 'text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300'; 
+                cancelBtn.onclick = hideConfirm; 
+                actions.append(confirmBtn, cancelBtn); 
+                confirmationModal.classList.remove('hidden');
+                confirmationModal.classList.add('flex');
+            }
+            function hideConfirm() { confirmationModal.classList.add('hidden'); }
+            function showAlert(message, title = "सूचना") { 
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-body').innerHTML = message;
+                const actions = document.getElementById('modal-actions');
+                actions.innerHTML = '';
+                const okBtn = document.createElement('button');
+                okBtn.textContent = 'ठीक है';
+                okBtn.className = 'text-sm bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800';
+                okBtn.onclick = hideConfirm;
+                actions.appendChild(okBtn);
+                confirmationModal.classList.remove('hidden');
+                confirmationModal.classList.add('flex');
+            }
+
+            main();
+        }
+    </script>
+</body>
+</html>
+
+
