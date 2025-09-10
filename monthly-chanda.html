@@ -51,6 +51,9 @@
                     <input type="text" id="search-bar" placeholder="खोजें..." class="border border-slate-300 rounded-md flex-grow p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400">
                     <select id="year-selector" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition"></select>
                     
+                    <a href="homepage.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">होम</a>
+                    <a href="anya-chanda.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">अन्य चंदा देखें</a>
+
                     <div id="visitor-actions" class="flex gap-2">
                         <button id="show-login-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm w-full">एडमिन लॉगिन</button>
                         <button id="show-signup-modal-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm w-full">नया अकाउंट बनाएं</button>
@@ -488,46 +491,54 @@
                 }
             }
             
-            async function main() {
+            function main() {
                 populateYears();
                 loader.classList.remove('hidden');
 
-                const collectionRef = collection(db, 'chanda_data/shared/members');
-
-                try {
-                    await signInAnonymously(auth);
-                } catch(error) {
-                    console.error("Anonymous sign-in failed", error);
-                    if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
-                        loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">कनेक्शन विफल!</p><p class="text-sm">कृपया अपने Firebase प्रोजेक्ट की Authentication -> Sign-in method सेटिंग्स में जाएं और 'Anonymous' साइन-इन को इनेबल करें।</p></div>`;
-                    } else {
-                        loader.innerHTML = `<p class="text-red-500">डेटाबेस से कनेक्ट नहीं हो सका।</p>`;
-                    }
-                    return;
-                }
-
                 onAuthStateChanged(auth, async (user) => {
                     let isRealAdmin = false;
-                    if (user && !user.isAnonymous) {
-                        const adminDocRef = doc(db, "admins", user.uid);
+                    let currentUser = user;
+
+                    if (currentUser && !currentUser.isAnonymous) {
+                        const adminDocRef = doc(db, "admins", currentUser.uid);
                         const adminDocSnap = await getDoc(adminDocRef);
                         isRealAdmin = adminDocSnap.exists();
                     }
-                    await setupUIForAuthState(isRealAdmin ? user : null);
-                });
+                    
+                    await setupUIForAuthState(isRealAdmin ? currentUser : null);
+                    
+                    if (!currentUser) {
+                        try {
+                            const userCredential = await signInAnonymously(auth);
+                            currentUser = userCredential.user;
+                        } catch (error) {
+                             console.error("Anonymous sign-in failed", error);
+                             if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
+                                loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">कनेक्शन विफल!</p><p class="text-sm">कृपया अपने Firebase प्रोजेक्ट की Authentication -> Sign-in method सेटिंग्स में जाएं और 'Anonymous' साइन-इन को इनेबल करें।</p></div>`;
+                            } else {
+                                loader.innerHTML = `<p class="text-red-500">डेटाबेस से कनेक्ट नहीं हो सका।</p>`;
+                            }
+                            return;
+                        }
+                    }
 
-                unsubscribe = onSnapshot(collectionRef, (snapshot) => {
-                    allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    revertEditingCell();
-                    renderMembers();
-                    loader.classList.add('hidden');
-                }, (error) => {
-                    console.error("Data loading error:", error);
-                    loader.classList.remove('hidden');
-                    tableSection.classList.add('hidden');
-                    loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">डेटा लोड नहीं हो सका!</p><p class="text-sm">सुनिश्चित करें कि आपके Firestore सुरक्षा नियम सही हैं।</p></div>`;
+                    if (unsubscribe) unsubscribe();
+
+                    const collectionRef = collection(db, 'chanda_data/shared/members');
+                    unsubscribe = onSnapshot(collectionRef, (snapshot) => {
+                        allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        revertEditingCell();
+                        renderMembers();
+                        loader.classList.add('hidden');
+                    }, (error) => {
+                        console.error("Data loading error:", error);
+                        loader.classList.remove('hidden');
+                        tableSection.classList.add('hidden');
+                        loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">डेटा लोड नहीं हो सका!</p><p class="text-sm">सुनिश्चित करें कि आपके Firestore सुरक्षा नियम सही हैं।</p></div>`;
+                    });
                 });
             }
+
 
             // All other functions and event listeners
             function revertEditingCell() { if (currentlyEditingCell) { currentlyEditingCell.cell.innerHTML = currentlyEditingCell.originalContent; currentlyEditingCell = null; } }
@@ -632,4 +643,6 @@
     </script>
 </body>
 </html>
+
+
 
