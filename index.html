@@ -64,7 +64,7 @@
 
             <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Card 1: Monthly Records -->
-                <a href="index.html" class="card bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col items-center text-center fade-in fade-in-delay-2">
+                <a href="monthly-chanda.html" class="card bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col items-center text-center fade-in fade-in-delay-2">
                     <div class="bg-yellow-100 p-4 rounded-full">
                         <svg class="w-12 h-12 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.75 10.75a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zm3.5-1.5a.75.75 0 00-1.5 0v7a.75.75 0 001.5 0v-7zm-7-1.5a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5zm10.5 1.5a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zM2.75 6.5a.75.75 0 00-1.5 0v10a.75.75 0 001.5 0v-10zM22 6.5a.75.75 0 00-1.5 0v10a.75.75 0 001.5 0v-10zM4.25 4h15.5a.75.75 0 010 1.5H4.25a.75.75 0 010-1.5z" /></svg>
                     </div>
@@ -155,9 +155,14 @@
             onAuthStateChanged(auth, async (user) => {
                 let isRealAdmin = false;
                 if (user && !user.isAnonymous) {
-                    const adminDocRef = doc(db, "admins", user.uid);
-                    const adminDocSnap = await getDoc(adminDocRef);
-                    isRealAdmin = adminDocSnap.exists();
+                    try {
+                        const adminDocRef = doc(db, "admins", user.uid);
+                        const adminDocSnap = await getDoc(adminDocRef);
+                        isRealAdmin = adminDocSnap.exists();
+                    } catch (e) {
+                        console.error("Error checking admin status:", e);
+                        isRealAdmin = false;
+                    }
                 }
                 setupUI(isRealAdmin ? user : null);
             });
@@ -241,3 +246,4 @@
 
 </body>
 </html>
+
