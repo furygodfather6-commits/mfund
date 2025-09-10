@@ -31,12 +31,9 @@
 
         /* Print Specific Styles */
         @media print {
-            /* Hide everything on the page by default */
             body > *:not(#print-content) {
                 display: none !important;
             }
-
-            /* Make the print container visible and take up the whole page */
             #print-content {
                 display: block !important;
                 position: absolute;
@@ -46,8 +43,6 @@
                 font-family: sans-serif;
                 -webkit-print-color-adjust: exact;
             }
-            
-            /* Styles for the content inside the print container */
             #print-content h1, #print-content h2 { text-align: center; margin-bottom: 5px; color: #000; }
             #print-content h2 { margin-top: 0; font-size: 1.25rem; }
             #print-content .summary { display: flex; justify-content: space-around; flex-wrap: wrap; margin: 15px 0; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
@@ -66,56 +61,62 @@
 
     <div id="app" class="min-h-screen w-full p-4">
         <div class="bg-white border border-slate-200 rounded-xl shadow-lg p-4 w-full flex flex-col h-[calc(100vh-2rem)]">
-            <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-3">
-                    <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.773 2.022a.75.75 0 0 0-1.546 0l-1.02 4.082a.75.75 0 0 1-.726.543H5.409a.75.75 0 0 0-.528 1.284l3.233 3.28a.75.75 0 0 1-.277.99l-1.21 3.84a.75.75 0 0 0 .913 1.01l3.34-2.31a.75.75 0 0 1 .892 0l3.34 2.31a.75.75 0 0 0 .914-1.01l-1.21-3.84a.75.75 0 0 1-.278-.99l3.233-3.28a.75.75 0 0 0-.528-1.284h-4.072a.75.75 0 0 1-.727-.543L12.773 2.022ZM12 10.5a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V10.5ZM5.25 21a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Zm12 0a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Z" /></svg>
-                    <h2 class="text-xl font-bold text-green-800 shrink-0">मस्जिद चंदा रिकॉर्ड</h2>
+            
+            <div class="flex flex-col gap-4 pb-3 border-b border-slate-200">
+
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.773 2.022a.75.75 0 0 0-1.546 0l-1.02 4.082a.75.75 0 0 1-.726.543H5.409a.75.75 0 0 0-.528 1.284l3.233 3.28a.75.75 0 0 1-.277.99l-1.21 3.84a.75.75 0 0 0 .913 1.01l3.34-2.31a.75.75 0 0 1 .892 0l3.34 2.31a.75.75 0 0 0 .914-1.01l-1.21-3.84a.75.75 0 0 1-.278-.99l3.233-3.28a.75.75 0 0 0-.528-1.284h-4.072a.75.75 0 0 1-.727-.543L12.773 2.022ZM12 10.5a.75.75 0 0 0-1.5 0v10.5a.75.75 0 0 0 1.5 0V10.5ZM5.25 21a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Zm12 0a.75.75 0 0 0 1.5 0V10.5a.75.75 0 0 0-1.5 0V21Z" /></svg>
+                        <h2 class="text-xl font-bold text-green-800 shrink-0">मस्जिद चंदा रिकॉर्ड</h2>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <div id="visitor-actions" class="flex gap-2">
+                            <button id="show-login-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm">एडमिन लॉगिन</button>
+                            <button id="show-signup-modal-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">नया अकाउंट बनाएं</button>
+                        </div>
+                        <div id="admin-area" class="hidden items-center gap-2">
+                            <div id="invite-code-display" class="hidden items-baseline gap-2 bg-slate-100 px-3 py-2 rounded-md">
+                                <div id="invite-code-view" class="flex items-baseline gap-2">
+                                    <h3 class="text-xs font-semibold text-slate-500">Invite Code:</h3>
+                                    <p id="invite-code-text" class="text-base font-bold text-green-800 cursor-pointer" title="कॉपी करने के लिए क्लिक करें"></p>
+                                    <button id="edit-invite-code-btn" class="text-slate-400 hover:text-green-600 transition ml-2" title="Edit Invite Code">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                                    </button>
+                                </div>
+                                <div id="invite-code-edit-view" class="hidden items-center gap-2">
+                                    <input type="text" id="invite-code-input-field" class="text-sm border border-slate-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-green-600">
+                                    <button id="save-invite-code-btn" class="bg-green-600 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-green-700">सेव</button>
+                                    <button id="cancel-edit-invite-code-btn" class="bg-slate-200 text-slate-700 text-xs font-semibold py-1 px-2 rounded-md hover:bg-slate-300">रद्द</button>
+                                </div>
+                            </div>
+                            <button id="logout-btn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-red-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
+                                <span>लॉगआउट</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div id="summary-section" class="grid grid-cols-2 sm:grid-cols-3 xl:flex xl:items-center gap-x-4 gap-y-2">
+
+                <div id="summary-section" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-2">
                     <div class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">चंदा देने वाले:</h3><p id="total-members-stat" class="text-base font-bold text-green-800">0</p></div>
                     <div class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">कुल चंदा:</h3><p id="yearly-potential-stat" class="text-base font-bold text-green-800">₹0</p></div>
                     <div class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">जमा:</h3><p id="yearly-collected-stat" class="text-base font-bold text-green-600">₹0</p></div>
                     <div class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">बकाया:</h3><p id="yearly-pending-stat" class="text-base font-bold text-red-600">₹0</p></div>
                     <div id="current-month-pending-card" class="flex items-baseline gap-2"><h3 class="text-xs font-semibold text-slate-500">इस माह बकाया:</h3><p id="current-month-pending-stat" class="text-base font-bold text-amber-600">₹0</p></div>
                 </div>
-                <div class="flex flex-col md:flex-row gap-2 shrink-0">
-                    <input type="text" id="search-bar" placeholder="खोजें..." class="border border-slate-300 rounded-md flex-grow p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400">
-                    <select id="year-selector" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition"></select>
-                    
-                    <a href="index.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">होम</a>
-                    <a href="anya-chanda.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">अन्य चंदा देखें</a>
-                    
-                    <button id="print-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">प्रिंट</button>
-                    <button id="csv-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">CSV डाउनलोड</button>
 
-                    <div id="visitor-actions" class="flex gap-2">
-                        <button id="show-login-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm w-full">एडमिन लॉगिन</button>
-                        <button id="show-signup-modal-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm w-full">नया अकाउंट बनाएं</button>
-                    </div>
-
-                    <div id="admin-area" class="hidden items-center gap-2">
-                         <div id="invite-code-display" class="hidden items-baseline gap-2 bg-slate-100 px-3 py-2 rounded-md">
-                            <div id="invite-code-view" class="flex items-baseline gap-2">
-                                <h3 class="text-xs font-semibold text-slate-500">Invite Code:</h3>
-                                <p id="invite-code-text" class="text-base font-bold text-green-800 cursor-pointer" title="कॉपी करने के लिए क्लिक करें"></p>
-                                <button id="edit-invite-code-btn" class="text-slate-400 hover:text-green-600 transition ml-2" title="Edit Invite Code">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
-                                </button>
-                            </div>
-                            <div id="invite-code-edit-view" class="hidden items-center gap-2">
-                                <input type="text" id="invite-code-input-field" class="text-sm border border-slate-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-green-600">
-                                <button id="save-invite-code-btn" class="bg-green-600 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-green-700">सेव</button>
-                                <button id="cancel-edit-invite-code-btn" class="bg-slate-200 text-slate-700 text-xs font-semibold py-1 px-2 rounded-md hover:bg-slate-300">रद्द</button>
-                            </div>
-                        </div>
-                        <button id="logout-btn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-red-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
-                            <span>लॉगआउट</span>
-                        </button>
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="text" id="search-bar" placeholder="खोजें..." class="border border-slate-300 rounded-md md:flex-grow p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400">
+                    <div class="flex gap-2">
+                        <select id="year-selector" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition w-full"></select>
+                        <a href="index.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">होम</a>
+                        <a href="anya-chanda.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm shrink-0">अन्य चंदा देखें</a>
+                        <button id="print-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">प्रिंट</button>
+                        <button id="csv-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">CSV</button>
                     </div>
                 </div>
-            </div>
 
+            </div>
             <div id="admin-controls" class="hidden py-3 border-b border-slate-200">
                 <form id="add-member-inline-form" class="flex-grow md:flex-grow-0 flex flex-wrap gap-2">
                     <input type="text" id="new-member-name" placeholder="नया नाम..." class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition placeholder-slate-400 w-full sm:w-auto sm:flex-1" required>
@@ -180,6 +181,8 @@
     <div id="payment-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-xl shadow-lg p-5 w-full max-w-md mx-auto"><h3 id="payment-modal-title" class="text-lg font-bold mb-5 text-slate-800 text-center"></h3><form id="payment-form"><div class="mb-3"><label for="payment-date" class="block text-xs font-medium text-slate-700 mb-1">भुगतान की तारीख</label><input type="date" id="payment-date" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required></div><div class="mb-5"><label for="payment-amount" class="block text-xs font-medium text-slate-700 mb-1">जमा राशि (₹)</label><input type="number" id="payment-amount" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required min="0"></div><div class="flex justify-between items-center gap-3"><button type="button" id="delete-payment-btn" class="text-sm bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700">रसीद हटाएं</button><div class="flex gap-3"><button type="button" id="cancel-payment-btn" class="text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300">रद्द करें</button><button type="submit" class="text-sm bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800">सेव करें</button></div></div></form></div></div>
     
     <script type="module">
+        // The entire <script> block remains the same as the previous version.
+        // No changes are needed in the JavaScript logic.
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -202,10 +205,8 @@
             const auth = getAuth(app);
             setLogLevel('error'); 
 
-            // DOM Elements
             const printBtn = document.getElementById('print-btn');
             const csvBtn = document.getElementById('csv-btn');
-            // ... (rest of the DOM elements are the same)
             const showLoginModalBtn = document.getElementById('show-login-modal-btn');
             const showSignupModalBtn = document.getElementById('show-signup-modal-btn');
             const visitorActions = document.getElementById('visitor-actions');
@@ -259,9 +260,7 @@
             let allMembers = [], activePaymentContext = null, currentlyEditingCell = null, isAdmin = false;
             let currentAuthMode = 'login';
             let unsubscribe; 
-
-            // ... (All other functions like setupUIForAuthState, showAuthModal, etc. are exactly the same)
-
+            
             async function setupUIForAuthState(adminUser) {
                 isAdmin = !!adminUser;
                 visitorActions.classList.toggle('hidden', isAdmin);
@@ -300,7 +299,7 @@
                     authModalTitle.textContent = 'नया एडमिन अकाउंट बनाएं';
                     inviteCodeAuthInput.placeholder = 'Secret Code डालें या बनाएं';
                     submitAuthBtn.textContent = 'अकाउंट बनाएं';
-                } else { // Login
+                } else {
                     inviteCodeField.classList.add('hidden');
                     inviteCodeAuthInput.required = false;
                     authModalTitle.textContent = 'एडमिन लॉगिन';
@@ -555,14 +554,14 @@
 
                 const headers = ["नाम", "फ़ोन नंबर", "मासिक चंदा", "जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर", "कुल जमा", "कुल बकाया"];
 
-                let csvContent = "\uFEFF"; // BOM for UTF-8 Excel compatibility
+                let csvContent = "\uFEFF";
                 csvContent += headers.join(",") + "\n";
 
                 filteredMembers.forEach(member => {
                     const monthlyAmount = member.monthlyAmount || 0;
                     let memberYearlyPaid = 0;
                     const rowData = [
-                        `"${member.name.replace(/"/g, '""')}"`, // Handle quotes in name
+                        `"${member.name.replace(/"/g, '""')}"`,
                         member.phone || '',
                         monthlyAmount
                     ];
@@ -599,10 +598,6 @@
                 document.body.removeChild(link);
             }
 
-            /**
-             * UPDATED PRINT FUNCTION
-             * This function now uses CSS media queries for printing and is mobile-friendly.
-             */
             function printTable() {
                 const printContainer = document.getElementById('print-content');
                 const searchTerm = searchBar.value.toLowerCase();
@@ -652,7 +647,6 @@
                 window.print();
             }
 
-            // All other functions and event listeners
             function revertEditingCell() { if (currentlyEditingCell) { currentlyEditingCell.cell.innerHTML = currentlyEditingCell.originalContent; currentlyEditingCell = null; } }
             addMemberInlineForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
