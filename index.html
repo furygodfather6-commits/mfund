@@ -52,7 +52,7 @@
                     <select id="year-selector" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition"></select>
                     
                     <div id="visitor-actions" class="flex gap-2">
-                        <button id="show-login-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm w-full">लॉगिन करें</button>
+                        <button id="show-login-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-md hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm w-full">एडमिन लॉगिन</button>
                         <button id="show-signup-modal-btn" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm w-full">नया अकाउंट बनाएं</button>
                     </div>
 
@@ -66,7 +66,7 @@
                                 </button>
                             </div>
                             <div id="invite-code-edit-view" class="hidden items-center gap-2">
-                                <input type="text" id="invite-code-input" class="text-sm border border-slate-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-green-600">
+                                <input type="text" id="invite-code-input-field" class="text-sm border border-slate-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-green-600">
                                 <button id="save-invite-code-btn" class="bg-green-600 text-white text-xs font-semibold py-1 px-2 rounded-md hover:bg-green-700">सेव</button>
                                 <button id="cancel-edit-invite-code-btn" class="bg-slate-200 text-slate-700 text-xs font-semibold py-1 px-2 rounded-md hover:bg-slate-300">रद्द</button>
                             </div>
@@ -104,7 +104,7 @@
                 </div>
                  <div id="no-members" class="text-center py-12 text-slate-500 hidden">
                     <p class="text-lg font-semibold">कोई डेटा नहीं मिला।</p>
-                    <p id="no-members-subtitle" class="text-sm">अपना रिकॉर्ड देखने के लिए कृपया लॉगिन करें, या एक नया एडमिन अकाउंट बनाएं।</p>
+                    <p id="no-members-subtitle" class="text-sm"></p>
                 </div>
             </div>
         </div>
@@ -143,7 +143,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDDpEUw4ATVqzhrBlMT2xRsJbfMO2hYSpc",
@@ -174,7 +174,7 @@
             const editInviteCodeBtn = document.getElementById('edit-invite-code-btn');
             const inviteCodeView = document.getElementById('invite-code-view');
             const inviteCodeEditView = document.getElementById('invite-code-edit-view');
-            const inviteCodeInput = document.getElementById('invite-code-input');
+            const inviteCodeInputField = document.getElementById('invite-code-input-field');
             const saveInviteCodeBtn = document.getElementById('save-invite-code-btn');
             const cancelEditInviteCodeBtn = document.getElementById('cancel-edit-invite-code-btn');
             const adminControls = document.getElementById('admin-controls');
@@ -195,6 +195,7 @@
             const loader = document.getElementById('loader-container');
             const tableSection = document.getElementById('table-section');
             const noMembersMessage = document.getElementById('no-members');
+            const noMembersSubtitle = document.getElementById('no-members-subtitle');
             const totalMembersStat = document.getElementById('total-members-stat');
             const yearlyPotentialStat = document.getElementById('yearly-potential-stat');
             const yearlyCollectedStat = document.getElementById('yearly-collected-stat');
@@ -217,21 +218,14 @@
             let currentAuthMode = 'login';
             let unsubscribe; 
 
-            async function setupUIForAuthState(user) {
-                isAdmin = !!user;
+            async function setupUIForAuthState(adminUser) {
+                isAdmin = !!adminUser;
                 visitorActions.classList.toggle('hidden', isAdmin);
                 adminArea.classList.toggle('hidden', !isAdmin);
                 adminArea.classList.toggle('flex', isAdmin);
                 adminControls.classList.toggle('hidden', !isAdmin);
                 
-                if (!isAdmin) {
-                    allMembers = [];
-                    tableSection.classList.add('hidden');
-                    noMembersMessage.classList.remove('hidden');
-                    inviteCodeDisplay.classList.add('hidden');
-                } else {
-                    tableSection.classList.remove('hidden');
-                    noMembersMessage.classList.add('hidden');
+                if (isAdmin) {
                     try {
                         const inviteCodeRef = doc(db, 'app_config', 'invite_code');
                         const docSnap = await getDoc(inviteCodeRef);
@@ -244,6 +238,7 @@
                         console.error("Could not fetch invite code:", error);
                     }
                 }
+                
                 renderTableHeader();
                 renderMembers();
             }
@@ -253,15 +248,17 @@
                 authError.textContent = '';
                 authForm.reset();
                 
+                const inviteCodeAuthInput = document.getElementById('invite-code');
+
                 if (mode === 'signup') {
                     inviteCodeField.classList.remove('hidden');
-                    inviteCodeInput.required = true;
+                    inviteCodeAuthInput.required = true;
                     authModalTitle.textContent = 'नया एडमिन अकाउंट बनाएं';
-                    inviteCodeInput.placeholder = 'Secret Code डालें या बनाएं';
+                    inviteCodeAuthInput.placeholder = 'Secret Code डालें या बनाएं';
                     submitAuthBtn.textContent = 'अकाउंट बनाएं';
                 } else { // Login
                     inviteCodeField.classList.add('hidden');
-                    inviteCodeInput.required = false;
+                    inviteCodeAuthInput.required = false;
                     authModalTitle.textContent = 'एडमिन लॉगिन';
                     submitAuthBtn.textContent = 'लॉगिन करें';
                 }
@@ -290,7 +287,7 @@
                 try {
                     if (currentAuthMode === 'signup') {
                         submitAuthBtn.textContent = 'बनाया जा रहा है...';
-                        const inviteCode = inviteCodeInput.value.trim();
+                        const inviteCode = document.getElementById('invite-code').value.trim();
                         if (!inviteCode) throw new Error("Secret Code डालना ज़रूरी है।");
 
                         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -331,7 +328,8 @@
                     if (error.code) {
                         switch (error.code) {
                             case 'auth/operation-not-allowed':
-                                authError.textContent = 'साइन-इन मेथड बंद है। Firebase में इनेबल करें।';
+                            case 'auth/admin-restricted-operation':
+                                authError.textContent = "साइन-इन मेथड बंद है। Firebase में 'Anonymous' और 'Email/Password' को इनेबल करें।";
                                 break;
                             case 'auth/invalid-credential':
                             case 'auth/user-not-found':
@@ -357,7 +355,7 @@
             });
 
             editInviteCodeBtn.addEventListener('click', () => {
-                inviteCodeInput.value = inviteCodeText.textContent;
+                inviteCodeInputField.value = inviteCodeText.textContent;
                 inviteCodeView.classList.add('hidden');
                 inviteCodeEditView.classList.remove('hidden');
                 inviteCodeEditView.classList.add('flex');
@@ -370,7 +368,7 @@
             });
 
             saveInviteCodeBtn.addEventListener('click', async () => {
-                const newInviteCode = inviteCodeInput.value.trim();
+                const newInviteCode = inviteCodeInputField.value.trim();
                 if (!newInviteCode) {
                     showAlert("Invite code खाली नहीं हो सकता।", "त्रुटि");
                     return;
@@ -408,17 +406,23 @@
                 const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
                 const filteredMembers = allMembers.filter(member => member.name.toLowerCase().includes(searchTerm));
                 membersTableBody.innerHTML = '';
-                if (isAdmin) {
-                    noMembersMessage.classList.toggle('hidden', allMembers.length > 0 || !isAdmin);
-                    if (filteredMembers.length === 0 && allMembers.length > 0) {
-                        noMembersMessage.classList.remove('hidden');
-                        noMembersMessage.querySelector('p').textContent = 'इस खोज से कोई नाम मेल नहीं खाता।';
-                    } else {
-                        noMembersMessage.querySelector('p').textContent = 'कोई चंदा देने वाला नहीं मिला।';
-                    }
-                } else {
-                     noMembersMessage.classList.remove('hidden');
+                
+                const hasMembers = allMembers.length > 0;
+                const hasSearchResults = filteredMembers.length > 0;
+
+                tableSection.classList.toggle('hidden', !hasMembers || !hasSearchResults);
+                noMembersMessage.classList.toggle('hidden', hasMembers && hasSearchResults);
+
+                if (!hasMembers) {
+                    noMembersMessage.querySelector('p').textContent = 'कोई डेटा नहीं मिला।';
+                    noMembersSubtitle.textContent = isAdmin 
+                        ? 'पहला सदस्य जोड़ने के लिए ऊपर दिए गए फ़ॉर्म का उपयोग करें।'
+                        : 'अभी कोई चंदा देने वाला नहीं है। एडमिन द्वारा डेटा जोड़े जाने की प्रतीक्षा करें।';
+                } else if (!hasSearchResults) {
+                    noMembersMessage.querySelector('p').textContent = 'इस खोज से कोई नाम मेल नहीं खाता।';
+                    noMembersSubtitle.textContent = 'कृपया अपनी खोज बदल कर पुनः प्रयास करें।';
                 }
+
                 let yearlyCollected = 0, yearlyPotential = 0, currentMonthCollected = 0, currentMonthPotential = 0;
                 const systemCurrentYear = new Date().getFullYear();
                 const systemCurrentMonth = new Date().getMonth() + 1;
@@ -484,49 +488,44 @@
                 }
             }
             
-            function main() {
+            async function main() {
                 populateYears();
                 loader.classList.remove('hidden');
-                tableSection.classList.add('hidden');
-                noMembersMessage.classList.add('hidden');
+
+                const collectionRef = collection(db, 'chanda_data/shared/members');
+
+                try {
+                    await signInAnonymously(auth);
+                } catch(error) {
+                    console.error("Anonymous sign-in failed", error);
+                    if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
+                        loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">कनेक्शन विफल!</p><p class="text-sm">कृपया अपने Firebase प्रोजेक्ट की Authentication -> Sign-in method सेटिंग्स में जाएं और 'Anonymous' साइन-इन को इनेबल करें।</p></div>`;
+                    } else {
+                        loader.innerHTML = `<p class="text-red-500">डेटाबेस से कनेक्ट नहीं हो सका।</p>`;
+                    }
+                    return;
+                }
 
                 onAuthStateChanged(auth, async (user) => {
-                    if (unsubscribe) unsubscribe();
+                    let isRealAdmin = false;
+                    if (user && !user.isAnonymous) {
+                        const adminDocRef = doc(db, "admins", user.uid);
+                        const adminDocSnap = await getDoc(adminDocRef);
+                        isRealAdmin = adminDocSnap.exists();
+                    }
+                    await setupUIForAuthState(isRealAdmin ? user : null);
+                });
+
+                unsubscribe = onSnapshot(collectionRef, (snapshot) => {
+                    allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    revertEditingCell();
+                    renderMembers();
+                    loader.classList.add('hidden');
+                }, (error) => {
+                    console.error("Data loading error:", error);
                     loader.classList.remove('hidden');
                     tableSection.classList.add('hidden');
-                    
-                    if (user) {
-                        const adminDocRef = doc(db, "admins", user.uid);
-                        try {
-                            const adminDocSnap = await getDoc(adminDocRef);
-                            
-                            if (adminDocSnap.exists()) {
-                                await setupUIForAuthState(user); 
-                                const collectionRef = collection(db, 'chanda_data/shared/members');
-                                unsubscribe = onSnapshot(collectionRef, (snapshot) => {
-                                    allMembers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                                    revertEditingCell();
-                                    renderMembers();
-                                }, (error) => {
-                                    console.error("Data loading error:", error);
-                                });
-                            } else {
-                                await setupUIForAuthState(null);
-                                allMembers = [];
-                                renderMembers();
-                            }
-                        } catch (e) {
-                            console.error("Error checking for admin status:", e);
-                            await setupUIForAuthState(null);
-                            allMembers = [];
-                            renderMembers();
-                        }
-                    } else {
-                        await setupUIForAuthState(null);
-                        allMembers = [];
-                        renderMembers();
-                    }
-                    loader.classList.add('hidden');
+                    loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">डेटा लोड नहीं हो सका!</p><p class="text-sm">सुनिश्चित करें कि आपके Firestore सुरक्षा नियम सही हैं।</p></div>`;
                 });
             }
 
