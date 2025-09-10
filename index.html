@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मस्जिद रिकॉर्ड्स - होम</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            color-scheme: light; 
+            --primary-green: #166534;
+            --secondary-gold: #ca8a04;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f0fdf4;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23a7f3d0' fill-opacity='0.4'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4Z'/%3E%3Cpath d='M6 5V0h1v5h5v1H6v5H5V6H0V5h5Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: bg-pan-y 80s linear infinite;
+        }
+        @keyframes bg-pan-y {
+          0% { background-position: 50% 0%; }
+          100% { background-position: 50% 100%; }
+        }
+        .urdu-title { font-family: 'Noto Nastaliq Urdu', serif; }
+        .card { transition: all 0.3s ease-in-out; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .fade-in { animation: fadeIn 1s ease-out forwards; opacity: 0; }
+        .fade-in-delay-1 { animation-delay: 0.2s; }
+        .fade-in-delay-2 { animation-delay: 0.4s; }
+        .fade-in-delay-3 { animation-delay: 0.6s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div id="app" class="min-h-screen w-full flex flex-col items-center justify-center p-4">
+        <!-- Header -->
+        <header class="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-10">
+            <div class="flex items-center gap-2">
+                <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor"><path d="M542.2 24.1c-3-2.1-6.6-2.9-10.2-2.3C523.3 23.4 512 32.8 512 44.1v8.3c0 2.4-1.3 4.6-3.4 5.8L280.4 195.8l-3.3 1.7-3.3-1.7L45.4 58.2C43.3 57 42 54.8 42 52.4v-8.3C42 32.8 30.7 23.4 22 21.8c-3.6-.6-7.2.2-10.2 2.3C7.9 26.9 0 35.1 0 44.1v396.2c0 14.5 11.4 26.7 25.8 27.8c1.3.1 2.6.2 3.9.2c2.4 0 4.8-.4 7.1-1.1c8.5-2.8 13.2-12.1 10.3-20.6C44.2 438 48 432.5 48 426.7V256.9l22.6 11.9L288 377.9l217.4-109.1L528 256.9V426.7c0 5.8 3.8 11.3 6.9 14.1c2.9 8.5-1.9 17.8-10.3 20.6c-2.3.8-4.7 1.1-7.1 1.1c-1.3 0-2.6-.1-3.9-.2C564.6 466.9 576 454.8 576 440.3V44.1c0-9.1-7.9-17.2-11.8-20zM288 334L96 226.7V426.7c0 5.8 3.8 11.3 6.9 14.1c2.9 8.5-1.9 17.8-10.3 20.6C89.1 462.2 86 464 82.1 464c-1.3 0-2.6-.1-3.9-.2C63.4 462.6 48 447.1 48 426.7V101.4l240 126.3zm232-15.3l-240-126.3v325.3c0 20.4-15.4 35.9-31.8 37.1c-1.3.1-2.6.2-3.9.2c-3.9 0-7.1-1.8-10.3-4.5c2.9-8.5-1.9-17.8-10.3-20.6c-3.1-2.8-6.9-8.3-6.9-14.1V226.7L288 334z"/></svg>
+                <h1 class="urdu-title text-2xl font-bold text-green-900">मस्जिद-ए-अमन</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <div id="visitor-actions" class="flex gap-2">
+                    <button id="show-login-modal-btn" class="bg-white text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-50 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm border border-green-200 text-sm">एडमिन लॉगिन</button>
+                    <button id="show-signup-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm">नया अकाउंट बनाएं</button>
+                </div>
+                <div id="admin-area" class="hidden items-center gap-2">
+                    <button id="logout-btn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-red-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm">
+                        <span>लॉगआउट</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="text-center w-full max-w-5xl mx-auto">
+            <h2 class="urdu-title text-5xl md:text-7xl font-bold text-green-900 drop-shadow-md fade-in">हिसाब-किताब मैनेजमेंट सिस्टम</h2>
+            <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto fade-in fade-in-delay-1">आमदनी और खर्च का पूरा हिसाब अब आपकी उंगलियों पर। पूरी तरह से पारदर्शी और सुरक्षित।</p>
+
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Card 1: Monthly Records -->
+                <a href="index.html" class="card bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col items-center text-center fade-in fade-in-delay-2">
+                    <div class="bg-yellow-100 p-4 rounded-full">
+                        <svg class="w-12 h-12 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.75 10.75a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zm3.5-1.5a.75.75 0 00-1.5 0v7a.75.75 0 001.5 0v-7zm-7-1.5a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5zm10.5 1.5a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zM2.75 6.5a.75.75 0 00-1.5 0v10a.75.75 0 001.5 0v-10zM22 6.5a.75.75 0 00-1.5 0v10a.75.75 0 001.5 0v-10zM4.25 4h15.5a.75.75 0 010 1.5H4.25a.75.75 0 010-1.5z" /></svg>
+                    </div>
+                    <h3 class="mt-6 text-2xl font-bold text-slate-800">मासिक चंदा रिकॉर्ड</h3>
+                    <p class="mt-2 text-slate-500">सभी सदस्यों के महीने-वार चंदे का हिसाब देखें और मैनेज करें।</p>
+                </a>
+                <!-- Card 2: Other Records -->
+                <a href="anya-chanda.html" class="card bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col items-center text-center fade-in fade-in-delay-3">
+                     <div class="bg-green-100 p-4 rounded-full">
+                        <svg class="w-12 h-12 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" /></svg>
+                    </div>
+                    <h3 class="mt-6 text-2xl font-bold text-slate-800">आमदनी-खर्च रिकॉर्ड</h3>
+                    <p class="mt-2 text-slate-500">जुमा, त्योहार, मरम्मत, खर्च और तनख्वाह का पूरा हिसाब रखें।</p>
+                </a>
+            </div>
+        </main>
+    </div>
+
+     <!-- Modals -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-auto">
+            <h3 id="auth-modal-title" class="text-xl font-bold mb-5 text-slate-800 text-center"></h3>
+            <form id="auth-form">
+                <div id="registration-fields">
+                    <div class="mb-4">
+                        <label for="auth-email" class="block text-sm font-medium text-slate-700 mb-1">ईमेल</label>
+                        <input type="email" id="auth-email" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                    </div>
+                    <div class="mb-5">
+                        <label for="auth-password" class="block text-sm font-medium text-slate-700 mb-1">पासवर्ड (कम से कम 6 अक्षर)</label>
+                        <input type="password" id="auth-password" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600" required>
+                    </div>
+                </div>
+                <div id="invite-code-field" class="hidden mb-5">
+                    <label for="invite-code" class="block text-sm font-medium text-slate-700 mb-1">Secret Invite Code</label>
+                    <input type="text" id="invite-code" class="text-sm border border-slate-300 rounded-lg w-full p-2.5 focus:outline-none focus:ring-2 focus:ring-green-600">
+                </div>
+                <p id="auth-error" class="text-red-600 text-sm text-center mb-4 h-5"></p>
+                <div class="flex items-center gap-3">
+                    <button type="button" id="cancel-auth-btn" class="w-full text-sm bg-slate-200 text-slate-800 font-semibold py-2.5 px-4 rounded-lg hover:bg-slate-300">रद्द करें</button>
+                    <button type="submit" id="submit-auth-btn" class="w-full text-sm bg-green-700 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-green-800"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDpEUw4ATVqzhrBlMT2xRsJbfMO2hYSpc",
+            authDomain: "mffund-cff0a.firebaseapp.com",
+            projectId: "mffund-cff0a",
+            storageBucket: "mffund-cff0a.firebasestorage.app",
+            messagingSenderId: "5155894047",
+            appId: "1:5155894047:web:0956e587a14722aa23762a",  
+            measurementId: "G-7S1FSEH156"
+        };
+
+        if (!firebaseConfig.apiKey) {
+            document.getElementById('app').innerHTML = `<div class="p-8 text-center"><h2 class="text-2xl font-bold text-red-600">Firebase Config Missing!</h2></div>`;
+        } else {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+
+            const visitorActions = document.getElementById('visitor-actions');
+            const adminArea = document.getElementById('admin-area');
+            const logoutBtn = document.getElementById('logout-btn');
+            const showLoginModalBtn = document.getElementById('show-login-modal-btn');
+            const showSignupModalBtn = document.getElementById('show-signup-modal-btn');
+            const authModal = document.getElementById('auth-modal');
+            const authForm = document.getElementById('auth-form');
+            const cancelAuthBtn = document.getElementById('cancel-auth-btn');
+            const authError = document.getElementById('auth-error');
+            
+            let currentAuthMode = 'login';
+
+            function setupUI(adminUser) {
+                const isAdmin = !!adminUser;
+                visitorActions.classList.toggle('hidden', isAdmin);
+                adminArea.classList.toggle('hidden', !isAdmin);
+                adminArea.classList.toggle('flex', isAdmin);
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                let isRealAdmin = false;
+                if (user && !user.isAnonymous) {
+                    const adminDocRef = doc(db, "admins", user.uid);
+                    const adminDocSnap = await getDoc(adminDocRef);
+                    isRealAdmin = adminDocSnap.exists();
+                }
+                setupUI(isRealAdmin ? user : null);
+            });
+            
+            function showAuthModal(mode) {
+                currentAuthMode = mode;
+                authForm.reset();
+                const authModalTitle = document.getElementById('auth-modal-title');
+                const inviteCodeField = document.getElementById('invite-code-field');
+                const inviteCodeInput = document.getElementById('invite-code');
+                const submitBtn = document.getElementById('submit-auth-btn');
+
+                if (mode === 'signup') {
+                    authModalTitle.textContent = 'नया एडमिन अकाउंट बनाएं';
+                    inviteCodeField.classList.remove('hidden');
+                    inviteCodeInput.required = true;
+                    inviteCodeInput.placeholder = 'Secret Code डालें या बनाएं';
+                    submitBtn.textContent = 'अकाउंट बनाएं';
+                } else {
+                    authModalTitle.textContent = 'एडमिन लॉगिन';
+                    inviteCodeField.classList.add('hidden');
+                    inviteCodeInput.required = false;
+                    submitBtn.textContent = 'लॉगिन करें';
+                }
+                authModal.classList.remove('hidden');
+                authModal.classList.add('flex');
+            }
+
+            function hideAuthModal() { authModal.classList.add('hidden'); }
+
+            showLoginModalBtn.addEventListener('click', () => showAuthModal('login'));
+            showSignupModalBtn.addEventListener('click', () => showAuthModal('signup'));
+            logoutBtn.addEventListener('click', () => signOut(auth));
+            cancelAuthBtn.addEventListener('click', hideAuthModal);
+
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                authError.textContent = '';
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                
+                try {
+                    if (currentAuthMode === 'signup') {
+                        const inviteCode = document.getElementById('invite-code').value.trim();
+                        if (!inviteCode) throw new Error("Secret Code डालना ज़रूरी है।");
+
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        const user = userCredential.user;
+
+                        try {
+                            const inviteCodeRef = doc(db, 'app_config', 'invite_code');
+                            const docSnap = await getDoc(inviteCodeRef);
+                            let isValidCode = false;
+
+                            if (docSnap.exists()) {
+                                if (inviteCode === docSnap.data().code) isValidCode = true;
+                            } else { isValidCode = true; }
+
+                            if (!isValidCode) throw new Error("गलत Secret Code।");
+
+                            if (!docSnap.exists()) {
+                                await setDoc(inviteCodeRef, { code: inviteCode });
+                            }
+                            const userDocRef = doc(db, `admins/${user.uid}`);
+                            await setDoc(userDocRef, { ownerEmail: email });
+
+                        } catch (validationError) {
+                            if (user) { try { await user.delete(); } catch (delErr) { console.error("Cleanup failed:", delErr); } }
+                            throw validationError;
+                        }
+                    } else { 
+                        await signInWithEmailAndPassword(auth, email, password);
+                    }
+                    hideAuthModal();
+                } catch (error) {
+                    authError.textContent = error.message;
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
