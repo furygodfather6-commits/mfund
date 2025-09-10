@@ -113,7 +113,7 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, getDocs, query, limit, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -211,7 +211,10 @@
                 
                 try {
                     if (isFirstRun) {
-                        await createUserWithEmailAndPassword(auth, email, password);
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        // FIX: Create a document for the admin user so the app knows it's not the first run anymore.
+                        const adminDocRef = doc(db, 'public_chanda', userCredential.user.uid);
+                        await setDoc(adminDocRef, { adminEmail: email, createdAt: serverTimestamp() });
                     } else {
                         await signInWithEmailAndPassword(auth, email, password);
                     }
