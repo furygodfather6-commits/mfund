@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>मस्जिद रिकॉर्ड्स - होम</title>
+    <title>मस्जिद-ए-अमन - होम</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -29,6 +29,12 @@
         .fade-in-delay-1 { animation-delay: 0.2s; }
         .fade-in-delay-2 { animation-delay: 0.4s; }
         .fade-in-delay-3 { animation-delay: 0.6s; }
+        .fade-in-delay-4 { animation-delay: 0.8s; }
+        .fade-in-delay-5 { animation-delay: 1.0s; }
+        .fade-in-delay-6 { animation-delay: 1.2s; }
+        .fade-in-delay-7 { animation-delay: 1.4s; }
+        .fade-in-delay-8 { animation-delay: 1.6s; }
+        .fade-in-delay-9 { animation-delay: 1.8s; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -38,9 +44,9 @@
 </head>
 <body class="text-slate-800">
 
-    <div id="app" class="min-h-screen w-full flex flex-col items-center justify-center p-4">
+    <div id="app" class="min-h-screen w-full flex flex-col items-center p-4">
         <!-- Header -->
-        <header class="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-10">
+        <header class="sticky top-0 left-0 right-0 p-4 flex justify-between items-center z-20 bg-white/80 backdrop-blur-sm shadow-sm">
             <div class="flex items-center gap-2">
                 <svg class="w-8 h-8 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor"><path d="M542.2 24.1c-3-2.1-6.6-2.9-10.2-2.3C523.3 23.4 512 32.8 512 44.1v8.3c0 2.4-1.3 4.6-3.4 5.8L280.4 195.8l-3.3 1.7-3.3-1.7L45.4 58.2C43.3 57 42 54.8 42 52.4v-8.3C42 32.8 30.7 23.4 22 21.8c-3.6-.6-7.2.2-10.2 2.3C7.9 26.9 0 35.1 0 44.1v396.2c0 14.5 11.4 26.7 25.8 27.8c1.3.1 2.6.2 3.9.2c2.4 0 4.8-.4 7.1-1.1c8.5-2.8 13.2-12.1 10.3-20.6C44.2 438 48 432.5 48 426.7V256.9l22.6 11.9L288 377.9l217.4-109.1L528 256.9V426.7c0 5.8 3.8 11.3 6.9 14.1c2.9 8.5-1.9 17.8-10.3 20.6c-2.3.8-4.7 1.1-7.1 1.1c-1.3 0-2.6-.1-3.9-.2C564.6 466.9 576 454.8 576 440.3V44.1c0-9.1-7.9-17.2-11.8-20zM288 334L96 226.7V426.7c0 5.8 3.8 11.3 6.9 14.1c2.9 8.5-1.9 17.8-10.3 20.6C89.1 462.2 86 464 82.1 464c-1.3 0-2.6-.1-3.9-.2C63.4 462.6 48 447.1 48 426.7V101.4l240 126.3zm232-15.3l-240-126.3v325.3c0 20.4-15.4 35.9-31.8 37.1c-1.3.1-2.6.2-3.9.2c-3.9 0-7.1-1.8-10.3-4.5c2.9-8.5-1.9-17.8-10.3-20.6c-3.1-2.8-6.9-8.3-6.9-14.1V226.7L288 334z"/></svg>
                 <h1 class="urdu-title text-2xl font-bold text-green-900">मस्जिद-ए-अमन</h1>
@@ -58,29 +64,130 @@
             </div>
         </header>
 
-        <main class="text-center w-full max-w-5xl mx-auto">
-            <h2 class="urdu-title text-5xl md:text-7xl font-bold text-green-900 drop-shadow-md fade-in">हिसाब-किताब मैनेजमेंट सिस्टम</h2>
-            <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto fade-in fade-in-delay-1">आमदनी और खर्च का पूरा हिसाब अब आपकी उंगलियों पर। पूरी तरह से पारदर्शी और सुरक्षित।</p>
+        <main class="text-center w-full max-w-5xl mx-auto pt-16">
+            <h2 class="urdu-title text-5xl md:text-7xl font-bold text-green-900 drop-shadow-md fade-in">मस्जिद-ए-अमन में आपका स्वागत है</h2>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto fade-in fade-in-delay-1">यह हमारी मस्जिद का official portal है। यहाँ आपको नमाज़ के समय, ज़रूरी एलान और हिसाब-किताब की पूरी जानकारी मिलेगी।</p>
 
-            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Card 1: Monthly Records -->
-                <a href="monthly-chanda.html" class="card bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col items-center text-center fade-in fade-in-delay-2">
-                    <div class="bg-yellow-100 p-4 rounded-full">
-                        <svg class="w-12 h-12 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.75 10.75a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zm3.5-1.5a.75.75 0 00-1.5 0v7a.75.75 0 001.5 0v-7zm-7-1.5a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5zm10.5 1.5a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zM2.75 6.5a.75.75 0 00-1.5 0v10a.75.75 0 001.5 0v-10zM22 6.5a.75.75 0 00-1.5 0v10a.75.75 0 001.5 0v-10zM4.25 4h15.5a.75.75 0 010 1.5H4.25a.75.75 0 010-1.5z" /></svg>
+            <!-- Prayer Times Section -->
+            <section class="mt-16 fade-in fade-in-delay-2">
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200">
+                    <h3 class="urdu-title text-3xl font-bold text-green-800">आज की नमाज़ का समय</h3>
+                    <p class="text-slate-500 mb-6" id="current-date">13 सितम्बर 2025</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-white">
+                        <div class="bg-green-800 p-4 rounded-lg shadow-md"> <p class="font-semibold text-lg">फज्र</p> <p class="text-2xl font-bold">5:15 AM</p> </div>
+                        <div class="bg-yellow-600 p-4 rounded-lg shadow-md"> <p class="font-semibold text-lg">तुलु</p> <p class="text-2xl font-bold">6:30 AM</p> </div>
+                        <div class="bg-green-700 p-4 rounded-lg shadow-md"> <p class="font-semibold text-lg">ज़ुहर</p> <p class="text-2xl font-bold">1:30 PM</p> </div>
+                        <div class="bg-green-600 p-4 rounded-lg shadow-md"> <p class="font-semibold text-lg">असर</p> <p class="text-2xl font-bold">5:15 PM</p> </div>
+                        <div class="bg-orange-600 p-4 rounded-lg shadow-md"> <p class="font-semibold text-lg">गुरुब</p> <p class="text-2xl font-bold">6:45 PM</p> </div>
+                        <div class="bg-green-800 p-4 rounded-lg shadow-md"> <p class="font-semibold text-lg">ईशा</p> <p class="text-2xl font-bold">8:30 PM</p> </div>
                     </div>
+                </div>
+            </section>
+            
+            <h3 class="urdu-title text-4xl font-bold text-green-900 mt-16 fade-in fade-in-delay-3">मैनेजमेंट डैशबोर्ड</h3>
+            <p class="mt-2 text-base text-slate-600 max-w-2xl mx-auto fade-in fade-in-delay-3">आमदनी और खर्च का पूरा हिसाब अब आपकी उंगलियों पर। पूरी तरह से पारदर्शी और सुरक्षित।</p>
+
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 fade-in fade-in-delay-3">
+                <a href="monthly-chanda.html" class="card bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col items-center text-center">
+                    <div class="bg-yellow-100 p-4 rounded-full"> <svg class="w-12 h-12 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.75 10.75a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zm3.5-1.5a.75.75 0 00-1.5 0v7a.75.75 0 001.5 0v-7zm-7-1.5a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5zm10.5 1.5a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zM2.75 6.5a.75.75 0 00-1.5 0v10a.75.75 0 001.5 0v-10zM22 6.5a.75.75 0 00-1.5 0v10a.75.75 0 001.5 0v-10zM4.25 4h15.5a.75.75 0 010 1.5H4.25a.75.75 0 010-1.5z" /></svg> </div>
                     <h3 class="mt-6 text-2xl font-bold text-slate-800">मासिक चंदा रिकॉर्ड</h3>
                     <p class="mt-2 text-slate-500">सभी सदस्यों के महीने-वार चंदे का हिसाब देखें और मैनेज करें।</p>
                 </a>
-                <!-- Card 2: Other Records -->
-                <a href="anya-chanda.html" class="card bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col items-center text-center fade-in fade-in-delay-3">
-                     <div class="bg-green-100 p-4 rounded-full">
-                        <svg class="w-12 h-12 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" /></svg>
-                    </div>
+                <a href="anya-chanda.html" class="card bg-white p-8 rounded-2xl shadow-lg border border-slate-200 flex flex-col items-center text-center">
+                     <div class="bg-green-100 p-4 rounded-full"> <svg class="w-12 h-12 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" /></svg> </div>
                     <h3 class="mt-6 text-2xl font-bold text-slate-800">आमदनी-खर्च रिकॉर्ड</h3>
                     <p class="mt-2 text-slate-500">जुमा, त्योहार, मरम्मत, खर्च और तनख्वाह का पूरा हिसाब रखें।</p>
                 </a>
             </div>
+            
+            <section class="mt-16 text-left fade-in fade-in-delay-4">
+                 <h3 class="urdu-title text-4xl font-bold text-green-900 text-center">ज़रूरी एलान और प्रोग्राम</h3>
+                 <div class="mt-8 bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-slate-200 space-y-4">
+                    <div class="p-4 border-l-4 border-green-600 bg-green-50 rounded-r-lg">
+                        <p class="font-semibold text-green-800">15 सितम्बर: सालाना जलसा</p>
+                        <p class="text-sm text-slate-600">ईशा की नमाज़ के बाद सालाना जलसे का प्रोग्राम है। आप सब ज़रूर तशरीफ़ लाएं।</p>
+                    </div>
+                     <div class="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded-r-lg">
+                        <p class="font-semibold text-yellow-800">हर जुमे को बच्चों का दीनी प्रोग्राम</p>
+                        <p class="text-sm text-slate-600">हर जुमे को असर की नमाज़ के बाद बच्चों के लिए दीनी तालीम का प्रोग्राम होता है।</p>
+                    </div>
+                 </div>
+            </section>
+            
+            <section class="mt-16 text-left fade-in fade-in-delay-5">
+                <h3 class="urdu-title text-4xl font-bold text-green-900 text-center">मस्जिद के बारे में</h3>
+                <div class="mt-8 bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-slate-200 text-center">
+                    <p class="text-slate-600 leading-relaxed">मस्जिद-ए-अमन शहर के बीचों-बीच वाके एक खूबसूरत इबादतगाह है। इसकी बुनियाद 1980 में रखी गई थी। यह मस्जिद न सिर्फ नमाज़ की अदायगी के लिए है, बल्कि दीनी तालीम और समाजी कामों का भी एक अहम मरकज़ (केंद्र) है। हमारा मकसद है कि हम सब मिलकर एक बेहतर और नेक समाज बनाएं।</p>
+                </div>
+            </section>
+            
+            <section class="mt-16 text-left fade-in fade-in-delay-6">
+                 <h3 class="urdu-title text-4xl font-bold text-green-900 text-center">हमारी सेवाएं</h3>
+                 <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                     <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 text-center">
+                        <h4 class="text-xl font-bold text-green-800">दीनी तालीम</h4>
+                        <p class="mt-2 text-slate-500">बच्चों और बड़ों के लिए कुरान और हदीस की तालीम का इंतेज़ाम।</p>
+                     </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 text-center">
+                        <h4 class="text-xl font-bold text-green-800">निकाह</h4>
+                        <p class="mt-2 text-slate-500">इस्लामी तरीके से निकाह पढ़वाने के लिए मस्जिद कमेटी से संपर्क करें।</p>
+                     </div>
+                      <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 text-center">
+                        <h4 class="text-xl font-bold text-green-800">मदद और सलाह</h4>
+                        <p class="mt-2 text-slate-500">किसी भी दीनी मसले पर सलाह और ज़रूरतमंदों की मदद के लिए राब्ता करें।</p>
+                     </div>
+                 </div>
+            </section>
+
+            <section class="mt-16 text-left fade-in fade-in-delay-7">
+                <h3 class="urdu-title text-4xl font-bold text-green-900 text-center">तस्वीरें</h3>
+                <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <img src="https://placehold.co/600x400/166534/FFFFFF?text=Masjid+View" alt="मस्जिद का बाहरी हिस्सा" class="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://placehold.co/600x400/22c55e/FFFFFF?text=Prayer+Hall" alt="नमाज़ हॉल" class="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://placehold.co/600x400/16a34a/FFFFFF?text=Event" alt="मस्जिद का प्रोग्राम" class="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://placehold.co/600x400/15803d/FFFFFF?text=Community" alt="लोग" class="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                </div>
+            </section>
+
+            <section class="mt-16 text-left fade-in fade-in-delay-8">
+                <h3 class="urdu-title text-4xl font-bold text-green-900 text-center">ता'अवुन (अतिया)</h3>
+                <div class="mt-8 bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-slate-200 text-center">
+                    <p class="text-slate-600 mb-8 max-w-2xl mx-auto">आपकी मदद से मस्जिद के कामों और ज़रूरतमंदों की इमदाद में आसानी होती है। आप अपना अतिया कमेटी के मेंबरान से राब्ता करके या नीचे दिए गए नंबर्स पर ऑनलाइन (Google Pay, PhonePe, etc.) भेज सकते हैं।</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Member 1 -->
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                            <h4 class="text-xl font-bold text-green-800">जनाब मुहम्मद अहमद</h4>
+                            <p class="font-semibold text-slate-600">सदर (President)</p>
+                            <p class="mt-2 text-lg font-semibold text-gray-800">+91 98765 43210</p>
+                        </div>
+                        <!-- Member 2 -->
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                            <h4 class="text-xl font-bold text-green-800">जनाब अब्दुल करीम</h4>
+                            <p class="font-semibold text-slate-600">नायब सदर (Vice President)</p>
+                            <p class="mt-2 text-lg font-semibold text-gray-800">+91 98765 43211</p>
+                        </div>
+                        <!-- Member 3 -->
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                            <h4 class="text-xl font-bold text-green-800">जनाब इस्माईल मंसूरी</h4>
+                            <p class="font-semibold text-slate-600">खजांची (Treasurer)</p>
+                            <p class="mt-2 text-lg font-semibold text-gray-800">+91 98765 43212</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mt-16 text-left fade-in fade-in-delay-9">
+                <h3 class="urdu-title text-4xl font-bold text-green-900 text-center">हमसे संपर्क करें</h3>
+                <div class="mt-8 bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-slate-200 text-center">
+                    <p class="text-slate-600 leading-relaxed"><span class="font-semibold">पता:</span> 123, अमन नगर, शहर का नाम, राज्य, पिन कोड</p>
+                    <p class="text-slate-600 leading-relaxed mt-2"><span class="font-semibold">ईमेल:</span> contact@masjid-e-aman.com | <span class="font-semibold">फ़ोन:</span> +91 98765 43210</p>
+                </div>
+            </section>
         </main>
+        
+        <footer class="w-full max-w-5xl mx-auto mt-16 pb-8 text-center text-slate-500 text-sm border-t pt-8 border-slate-200">
+            <p>&copy; <span id="current-year">2025</span> मस्जिद-ए-अमन. All Rights Reserved.</p>
+        </footer>
     </div>
 
      <!-- Modals -->
@@ -144,6 +251,12 @@
             const authError = document.getElementById('auth-error');
             
             let currentAuthMode = 'login';
+            
+            // Set current date and year
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('hi-IN', dateOptions);
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
 
             function setupUI(adminUser) {
                 const isAdmin = !!adminUser;
