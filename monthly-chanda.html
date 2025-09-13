@@ -181,8 +181,6 @@
     <div id="payment-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4"><div class="bg-white rounded-xl shadow-lg p-5 w-full max-w-md mx-auto"><h3 id="payment-modal-title" class="text-lg font-bold mb-5 text-slate-800 text-center"></h3><form id="payment-form"><div class="mb-3"><label for="payment-date" class="block text-xs font-medium text-slate-700 mb-1">भुगतान की तारीख</label><input type="date" id="payment-date" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required></div><div class="mb-5"><label for="payment-amount" class="block text-xs font-medium text-slate-700 mb-1">जमा राशि (₹)</label><input type="number" id="payment-amount" class="text-sm border border-slate-300 rounded-lg w-full p-2 focus:outline-none focus:ring-2 focus:ring-green-600" required min="0"></div><div class="flex justify-between items-center gap-3"><button type="button" id="delete-payment-btn" class="text-sm bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700">रसीद हटाएं</button><div class="flex gap-3"><button type="button" id="cancel-payment-btn" class="text-sm bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300">रद्द करें</button><button type="submit" class="text-sm bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800">सेव करें</button></div></div></form></div></div>
     
     <script type="module">
-        // The entire <script> block remains the same as the previous version.
-        // No changes are needed in the JavaScript logic.
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -496,6 +494,7 @@
             
             function main() {
                 populateYears();
+                setupInviteCodeEditor();
                 loader.classList.remove('hidden');
 
                 onAuthStateChanged(auth, async (user) => {
@@ -539,6 +538,48 @@
                         tableSection.classList.add('hidden');
                         loader.innerHTML = `<div class="text-center text-red-600"><p class="font-bold">डेटा लोड नहीं हो सका!</p><p class="text-sm">सुनिश्चित करें कि आपके Firestore सुरक्षा नियम सही हैं।</p></div>`;
                     });
+                });
+            }
+            
+            // --- Invite Code Edit Logic ---
+            function setupInviteCodeEditor() {
+                editInviteCodeBtn.addEventListener('click', () => {
+                    inviteCodeInputField.value = inviteCodeText.textContent;
+                    inviteCodeView.classList.add('hidden');
+                    inviteCodeEditView.classList.remove('hidden');
+                    inviteCodeEditView.classList.add('flex');
+                    inviteCodeInputField.focus();
+                });
+
+                cancelEditInviteCodeBtn.addEventListener('click', () => {
+                    inviteCodeView.classList.remove('hidden');
+                    inviteCodeEditView.classList.add('hidden');
+                    inviteCodeEditView.classList.remove('flex');
+                });
+
+                saveInviteCodeBtn.addEventListener('click', async () => {
+                    const newCode = inviteCodeInputField.value.trim();
+                    if (!newCode) {
+                        showAlert('Invite code खाली नहीं हो सकता।');
+                        return;
+                    }
+                    saveInviteCodeBtn.disabled = true;
+                    saveInviteCodeBtn.textContent = 'Saving...';
+                    try {
+                        const inviteCodeRef = doc(db, 'app_config', 'invite_code');
+                        await setDoc(inviteCodeRef, { code: newCode });
+                        inviteCodeText.textContent = newCode;
+                        inviteCodeView.classList.remove('hidden');
+                        inviteCodeEditView.classList.add('hidden');
+                        inviteCodeEditView.classList.remove('flex');
+                        showAlert('Invite code सफलतापूर्वक अपडेट किया गया।', 'सफलता');
+                    } catch (error) {
+                        console.error("Error updating invite code:", error);
+                        showAlert('Invite code अपडेट करने में त्रुटि हुई।');
+                    } finally {
+                         saveInviteCodeBtn.disabled = false;
+                         saveInviteCodeBtn.textContent = 'सेव';
+                    }
                 });
             }
 
