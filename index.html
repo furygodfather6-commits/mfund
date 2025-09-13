@@ -57,20 +57,20 @@
 
     <div id="app" class="min-h-screen w-full flex flex-col items-center p-4">
         <!-- Header -->
-        <header class="sticky top-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm shadow-md z-20 flex justify-between items-center header-border">
+        <header class="sticky top-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm shadow-md z-20 flex justify-between items-center header-border flex-wrap">
             <!-- Left Side: Title -->
             <div class="flex items-center gap-3">
                 <svg class="w-10 h-10 text-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" fill="currentColor"><path d="M542.2 24.1c-3-2.1-6.6-2.9-10.2-2.3C523.3 23.4 512 32.8 512 44.1v8.3c0 2.4-1.3 4.6-3.4 5.8L280.4 195.8l-3.3 1.7-3.3-1.7L45.4 58.2C43.3 57 42 54.8 42 52.4v-8.3C42 32.8 30.7 23.4 22 21.8c-3.6-.6-7.2.2-10.2 2.3C7.9 26.9 0 35.1 0 44.1v396.2c0 14.5 11.4 26.7 25.8 27.8c1.3.1 2.6.2 3.9.2c2.4 0 4.8-.4 7.1-1.1c8.5-2.8 13.2-12.1 10.3-20.6C44.2 438 48 432.5 48 426.7V256.9l22.6 11.9L288 377.9l217.4-109.1L528 256.9V426.7c0 5.8 3.8 11.3 6.9 14.1c2.9 8.5-1.9 17.8-10.3 20.6c-2.3.8-4.7 1.1-7.1 1.1c-1.3 0-2.6-.1-3.9-.2C564.6 466.9 576 454.8 576 440.3V44.1c0-9.1-7.9-17.2-11.8-20zM288 334L96 226.7V426.7c0 5.8 3.8 11.3 6.9 14.1c2.9 8.5-1.9 17.8-10.3 20.6C89.1 462.2 86 464 82.1 464c-1.3 0-2.6-.1-3.9-.2C63.4 462.6 48 447.1 48 426.7V101.4l240 126.3zm232-15.3l-240-126.3v325.3c0 20.4-15.4 35.9-31.8 37.1c-1.3.1-2.6.2-3.9.2c-3.9 0-7.1-1.8-10.3-4.5c2.9-8.5-1.9-17.8-10.3-20.6c-3.1-2.8-6.9-8.3-6.9-14.1V226.7L288 334z"/></svg>
-                <h1 class="urdu-title text-3xl font-bold text-green-900">मस्जिद-ए-अमन</h1>
+                <h1 class="urdu-title text-2xl sm:text-3xl font-bold text-green-900">मस्जिद-ए-अमन</h1>
             </div>
 
             <!-- Right Side: All Actions -->
-            <div class="flex items-center gap-4">
-                <a href="monthly-chanda.html" class="text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-100 transition-all duration-300 text-sm hidden sm:block">मासिक चंदा</a>
-                <a href="anya-chanda.html" class="text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-100 transition-all duration-300 text-sm hidden sm:block">आमदनी-खर्च</a>
+            <div class="flex items-center gap-2 sm:gap-4 flex-wrap justify-end">
+                <a href="monthly-chanda.html" class="text-green-800 font-semibold py-2 px-3 rounded-lg hover:bg-green-100 transition-all duration-300 text-xs sm:text-sm">मासिक चंदा</a>
+                <a href="anya-chanda.html" class="text-green-800 font-semibold py-2 px-3 rounded-lg hover:bg-green-100 transition-all duration-300 text-xs sm:text-sm">आमदनी-खर्च</a>
                 <div id="visitor-actions" class="flex gap-2">
-                    <button id="show-login-modal-btn" class="bg-white text-green-800 font-semibold py-2 px-4 rounded-lg hover:bg-green-50 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm border border-green-200 text-sm">एडमिन लॉगिन</button>
-                    <button id="show-signup-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-sm">नया अकाउंट</button>
+                    <button id="show-login-modal-btn" class="bg-white text-green-800 font-semibold py-2 px-3 rounded-lg hover:bg-green-50 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm border border-green-200 text-xs sm:text-sm">लॉगिन</button>
+                    <button id="show-signup-modal-btn" class="bg-green-700 text-white font-semibold py-2 px-3 rounded-lg hover:bg-green-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-green-500/20 text-xs sm:text-sm">नया अकाउंट</button>
                 </div>
                 <div id="admin-area" class="hidden items-center gap-2">
                     <button id="logout-btn" class="bg-red-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-red-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm">
@@ -302,7 +302,7 @@
             const editPrayerTimesBtn = document.getElementById('edit-prayer-times-btn');
             const prayerTimeEditButtons = document.getElementById('prayer-time-edit-buttons');
             const savePrayerTimesBtn = document.getElementById('save-prayer-times-btn');
-            const cancelPrayerTimesBtn = document.getElementById('cancel-prayer-times-btn');
+            const cancelPrayerTimesBtn = document.getElementById('cancel-prayer-times-btn'); // This was missing
             const aboutUsTextEl = document.getElementById('about-us-text');
             const editAboutUsBtn = document.getElementById('edit-about-us-btn');
             const formModal = document.getElementById('form-modal');
