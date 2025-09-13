@@ -78,7 +78,7 @@
                 </div>
                 <div class="flex flex-col md:flex-row gap-2 shrink-0">
                      <a href="index.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">होम</a>
-                     <a href="index.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">मासिक चंदा देखें</a>
+                     <a href="monthly-chanda.html" class="bg-slate-200 text-slate-800 font-semibold py-2 px-3 rounded-md hover:bg-slate-300 transition-all duration-300 flex items-center justify-center gap-2 text-sm">मासिक चंदा देखें</a>
                      <select id="year-selector" class="border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600 transition no-print"></select>
                      <button id="print-btn" class="bg-blue-600 text-white font-semibold py-2 px-3 rounded-md hover:bg-blue-700 transition-all duration-300 flex items-center justify-center gap-2 text-sm">प्रिंट करें</button>
                     <div id="visitor-actions" class="flex gap-2">
@@ -237,7 +237,7 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setLogLevel, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -485,6 +485,7 @@
             async function main() {
                 loader.classList.remove('hidden');
                 populateYears();
+                setupInviteCodeEditor();
 
                 onAuthStateChanged(auth, async (user) => {
                     unsubscribes.forEach(unsub => unsub());
@@ -772,11 +773,51 @@
                 confirmationModal.classList.remove('hidden');
                 confirmationModal.classList.add('flex');
             }
+            
+            // --- Invite Code Edit Logic ---
+            function setupInviteCodeEditor() {
+                editInviteCodeBtn.addEventListener('click', () => {
+                    inviteCodeInputField.value = inviteCodeText.textContent;
+                    inviteCodeView.classList.add('hidden');
+                    inviteCodeEditView.classList.remove('hidden');
+                    inviteCodeEditView.classList.add('flex');
+                    inviteCodeInputField.focus();
+                });
+
+                cancelEditInviteCodeBtn.addEventListener('click', () => {
+                    inviteCodeView.classList.remove('hidden');
+                    inviteCodeEditView.classList.add('hidden');
+                    inviteCodeEditView.classList.remove('flex');
+                });
+
+                saveInviteCodeBtn.addEventListener('click', async () => {
+                    const newCode = inviteCodeInputField.value.trim();
+                    if (!newCode) {
+                        showAlert('Invite code खाली नहीं हो सकता।');
+                        return;
+                    }
+                    saveInviteCodeBtn.disabled = true;
+                    saveInviteCodeBtn.textContent = 'Saving...';
+                    try {
+                        const inviteCodeRef = doc(db, 'app_config', 'invite_code');
+                        await setDoc(inviteCodeRef, { code: newCode });
+                        inviteCodeText.textContent = newCode;
+                        inviteCodeView.classList.remove('hidden');
+                        inviteCodeEditView.classList.add('hidden');
+                        inviteCodeEditView.classList.remove('flex');
+                        showAlert('Invite code सफलतापूर्वक अपडेट किया गया।', 'सफलता');
+                    } catch (error) {
+                        console.error("Error updating invite code:", error);
+                        showAlert('Invite code अपडेट करने में त्रुटि हुई।');
+                    } finally {
+                         saveInviteCodeBtn.disabled = false;
+                         saveInviteCodeBtn.textContent = 'सेव';
+                    }
+                });
+            }
 
             main();
         }
     </script>
 </body>
 </html>
-
-
